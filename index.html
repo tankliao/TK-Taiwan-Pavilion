@@ -8,9 +8,9 @@
 <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
 <style>
 :root{
-  --bg:#080B14;--card:rgba(255,255,255,0.04);--border:rgba(255,255,255,0.08);
-  --red:#FE2C55;--cyan:#25F4EE;--green:#22D47B;--yellow:#FFD700;
-  --text:#E8EAF0;--muted:#8B9AB0;--radius:16px;
+  --bg:#F5F6FA;--card:#FFFFFF;--border:#E2E6EF;
+  --red:#E8123A;--cyan:#008B86;--green:#0A8A4A;--yellow:#B8860B;
+  --text:#111827;--muted:#6B7280;--radius:16px;
 }
 *{box-sizing:border-box;margin:0;padding:0}
 body{background:var(--bg);color:var(--text);font-family:'Noto Sans TC',sans-serif;min-height:100vh;padding:0 0 60px}
@@ -18,103 +18,106 @@ body{background:var(--bg);color:var(--text);font-family:'Noto Sans TC',sans-seri
 
 /* Header */
 .header{
-  background:linear-gradient(135deg,rgba(254,44,85,0.15),rgba(37,244,238,0.08));
-  border-bottom:1px solid var(--border);
+  background:linear-gradient(135deg,#1a0a12,#0a1a1f);
+  border-bottom:1px solid #2a1f2a;
   padding:40px 32px 32px;
   text-align:center;
   position:relative;overflow:hidden;
 }
 .header::before{
   content:'';position:absolute;inset:0;
-  background:radial-gradient(ellipse 80% 60% at 50% 0%,rgba(254,44,85,0.1),transparent);
+  background:radial-gradient(ellipse 80% 60% at 50% 0%,rgba(254,44,85,0.15),transparent);
 }
-.header-logo{font-size:13px;color:var(--cyan);letter-spacing:4px;text-transform:uppercase;margin-bottom:12px}
-.header h1{font-size:clamp(22px,4vw,36px);font-weight:700;letter-spacing:-0.5px;margin-bottom:8px}
-.header h1 span{color:var(--red)}
-.header-meta{font-size:13px;color:var(--muted);margin-top:6px}
+.header-logo{font-size:13px;color:#25F4EE;letter-spacing:4px;text-transform:uppercase;margin-bottom:12px}
+.header h1{font-size:clamp(26px,4vw,42px);font-weight:700;letter-spacing:-0.5px;margin-bottom:8px;color:#fff}
+.header h1 span{color:#FE2C55}
+.header-meta{font-size:14px;color:rgba(255,255,255,0.5);margin-top:6px}
 .header-badge{
   display:inline-flex;align-items:center;gap:6px;
   background:rgba(34,212,123,0.15);border:1px solid rgba(34,212,123,0.3);
-  color:var(--green);padding:4px 12px;border-radius:20px;font-size:12px;margin-top:12px
+  color:#22D47B;padding:5px 14px;border-radius:20px;font-size:13px;margin-top:12px
 }
 .header-badge::before{content:'●';animation:pulse 2s infinite}
 @keyframes pulse{0%,100%{opacity:1}50%{opacity:0.4}}
 
 /* Layout */
-.container{max-width:1200px;margin:0 auto;padding:0 20px}
+.container{max-width:1400px;margin:0 auto;padding:0 24px}
 .section{margin-top:40px}
 .section-title{
-  font-size:13px;color:var(--cyan);letter-spacing:3px;text-transform:uppercase;
+  font-size:14px;color:var(--cyan);letter-spacing:3px;text-transform:uppercase;font-weight:700;
   margin-bottom:20px;display:flex;align-items:center;gap:10px;
 }
 .section-title::after{content:'';flex:1;height:1px;background:var(--border)}
 
-/* KPI Cards */
-.kpi-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:16px}
+/* KPI Cards - 5 equal columns, no gap */
+.kpi-grid{display:grid;grid-template-columns:repeat(5,1fr);gap:0;border:1px solid var(--border);border-radius:var(--radius);overflow:hidden;box-shadow:0 2px 16px rgba(0,0,0,0.07)}
 .kpi-card{
-  background:var(--card);border:1px solid var(--border);border-radius:var(--radius);
-  padding:24px;position:relative;overflow:hidden;
+  background:var(--card);border-right:1px solid var(--border);
+  padding:28px 24px;position:relative;overflow:hidden;
   animation:fadeUp .5s ease both;
 }
+.kpi-card:last-child{border-right:none}
+@media(max-width:900px){.kpi-grid{grid-template-columns:repeat(2,1fr)}.kpi-card{border-bottom:1px solid var(--border)}}
+@media(max-width:500px){.kpi-grid{grid-template-columns:1fr}}
 .kpi-card:nth-child(1){animation-delay:.05s}
 .kpi-card:nth-child(2){animation-delay:.1s}
 .kpi-card:nth-child(3){animation-delay:.15s}
 .kpi-card:nth-child(4){animation-delay:.2s}
 .kpi-card:nth-child(5){animation-delay:.25s}
-@keyframes fadeUp{from{opacity:0;transform:translateY(20px)}to{opacity:1;transform:translateY(0)}}
+@keyframes fadeUp{from{opacity:0;transform:translateY(16px)}to{opacity:1;transform:translateY(0)}}
 .kpi-card::before{
-  content:'';position:absolute;top:0;left:0;right:0;height:3px;
+  content:'';position:absolute;top:0;left:0;right:0;height:4px;
   background:var(--accent,var(--cyan));
 }
-.kpi-label{font-size:11px;color:var(--muted);letter-spacing:2px;text-transform:uppercase;margin-bottom:10px}
-.kpi-value{font-size:32px;font-weight:700;font-family:'Space Mono',monospace;line-height:1.1}
-.kpi-sub{font-size:12px;color:var(--muted);margin-top:6px}
-.kpi-note{font-size:11px;color:rgba(255,255,255,0.3);margin-top:4px}
-.kpi-wow{display:inline-flex;align-items:center;gap:4px;margin-top:8px;padding:3px 10px;border-radius:12px;font-size:12px;font-weight:700;font-family:'Space Mono',monospace}
-.kpi-wow.up{background:rgba(34,212,123,0.15);color:#22D47B;border:1px solid rgba(34,212,123,0.3)}
-.kpi-wow.down{background:rgba(254,44,85,0.15);color:#FE2C55;border:1px solid rgba(254,44,85,0.3)}
-.kpi-wow-label{font-size:10px;color:var(--muted);margin-top:3px}
+.kpi-label{font-size:12px;color:var(--muted);letter-spacing:1px;font-weight:600;margin-bottom:12px;text-transform:uppercase}
+.kpi-value{font-size:36px;font-weight:700;font-family:'Space Mono',monospace;line-height:1.1;color:var(--val-color,var(--text))}
+.kpi-sub{font-size:13px;color:var(--muted);margin-top:8px}
+.kpi-note{font-size:12px;color:#9CA3AF;margin-top:4px}
+.kpi-wow{display:inline-flex;align-items:center;gap:4px;margin-top:10px;padding:4px 12px;border-radius:8px;font-size:13px;font-weight:700;font-family:'Space Mono',monospace}
+.kpi-wow.up{background:#DCFCE7;color:#166534;border:1px solid #BBF7D0}
+.kpi-wow.down{background:#FEE2E2;color:#991B1B;border:1px solid #FECACA}
+.kpi-wow-label{font-size:11px;color:#9CA3AF;margin-top:4px}
 
 /* Chart area */
 .chart-grid{display:grid;grid-template-columns:1fr 1fr;gap:20px}
 @media(max-width:700px){.chart-grid{grid-template-columns:1fr}}
 .chart-card{
   background:var(--card);border:1px solid var(--border);border-radius:var(--radius);padding:24px;
-  animation:fadeUp .5s ease both;
+  box-shadow:0 1px 8px rgba(0,0,0,0.05);animation:fadeUp .5s ease both;
 }
-.chart-card h3{font-size:13px;color:var(--muted);letter-spacing:1px;margin-bottom:20px}
+.chart-card h3{font-size:14px;color:var(--muted);font-weight:600;margin-bottom:20px}
 
 /* Table */
-.table-card{background:var(--card);border:1px solid var(--border);border-radius:var(--radius);overflow:hidden;animation:fadeUp .5s ease both}
+.table-card{background:var(--card);border:1px solid var(--border);border-radius:var(--radius);overflow:hidden;animation:fadeUp .5s ease both;box-shadow:0 1px 8px rgba(0,0,0,0.05)}
 .table-scroll{overflow-x:auto}
 table{width:100%;border-collapse:collapse}
-th{background:rgba(255,255,255,0.06);color:var(--muted);font-size:11px;letter-spacing:1px;text-transform:uppercase;padding:12px 16px;text-align:left;white-space:nowrap}
-td{padding:12px 16px;border-top:1px solid var(--border);font-size:13px;vertical-align:middle}
-tr:hover td{background:rgba(255,255,255,0.02)}
-.badge{display:inline-flex;align-items:center;padding:3px 10px;border-radius:20px;font-size:11px;font-weight:600;gap:4px}
-.badge.pearl{background:rgba(37,244,238,0.15);color:var(--cyan);border:1px solid rgba(37,244,238,0.3)}
-.badge.mango{background:rgba(255,165,0,0.15);color:#FFA500;border:1px solid rgba(255,165,0,0.3)}
-.badge.noodle{background:rgba(254,44,85,0.15);color:var(--red);border:1px solid rgba(254,44,85,0.3)}
-.badge.hotpot{background:rgba(147,51,234,0.15);color:#C084FC;border:1px solid rgba(147,51,234,0.3)}
-.bar-wrap{background:rgba(255,255,255,0.08);border-radius:4px;height:6px;width:100%;min-width:80px}
-.bar-fill{height:6px;border-radius:4px;background:var(--fill,var(--cyan))}
+th{background:#F9FAFB;color:var(--muted);font-size:12px;letter-spacing:1px;text-transform:uppercase;padding:13px 16px;text-align:left;white-space:nowrap;border-bottom:1px solid var(--border)}
+td{padding:13px 16px;border-top:1px solid var(--border);font-size:14px;vertical-align:middle;color:var(--text)}
+tr:hover td{background:#F9FAFB}
+.badge{display:inline-flex;align-items:center;padding:3px 10px;border-radius:20px;font-size:12px;font-weight:600;gap:4px}
+.badge.pearl{background:#E0FAF9;color:#007A75;border:1px solid #A7F3F0}
+.badge.mango{background:#FEF3C7;color:#92400E;border:1px solid #FDE68A}
+.badge.noodle{background:#FEE2E2;color:#991B1B;border:1px solid #FECACA}
+.badge.hotpot{background:#F3E8FF;color:#6B21A8;border:1px solid #DDD6FE}
+.bar-wrap{background:#E5E7EB;border-radius:4px;height:6px;width:100%;min-width:80px}
+.bar-fill{height:6px;border-radius:4px;background:var(--fill,#008B86)}
 .rank-num{
   width:28px;height:28px;border-radius:50%;display:inline-flex;align-items:center;justify-content:center;
   font-size:12px;font-weight:700;font-family:'Space Mono',monospace;
 }
-.rank-1{background:rgba(255,215,0,0.2);color:#FFD700;border:1px solid rgba(255,215,0,0.4)}
-.rank-2{background:rgba(192,192,192,0.2);color:#C0C0C0;border:1px solid rgba(192,192,192,0.4)}
-.rank-3{background:rgba(205,127,50,0.2);color:#CD7F32;border:1px solid rgba(205,127,50,0.4)}
-.rank-n{background:rgba(255,255,255,0.06);color:var(--muted);border:1px solid var(--border)}
+.rank-1{background:#FEF9C3;color:#854D0E;border:1px solid #FDE047}
+.rank-2{background:#F1F5F9;color:#475569;border:1px solid #CBD5E1}
+.rank-3{background:#FFF7ED;color:#9A3412;border:1px solid #FED7AA}
+.rank-n{background:#F9FAFB;color:var(--muted);border:1px solid var(--border)}
 .plays-bar{display:flex;align-items:center;gap:8px}
-.plays-num{font-family:'Space Mono';font-size:12px;color:var(--text);min-width:50px}
+.plays-num{font-family:'Space Mono';font-size:13px;color:var(--text);min-width:50px}
 
 /* AI Analysis */
 .analysis-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:16px}
-.analysis-card{background:var(--card);border:1px solid var(--border);border-radius:var(--radius);padding:24px;animation:fadeUp .5s ease both}
-.analysis-card h3{font-size:13px;letter-spacing:2px;text-transform:uppercase;margin-bottom:16px;display:flex;align-items:center;gap:8px}
+.analysis-card{background:var(--card);border:1px solid var(--border);border-radius:var(--radius);padding:24px;animation:fadeUp .5s ease both;box-shadow:0 1px 8px rgba(0,0,0,0.05)}
+.analysis-card h3{font-size:14px;letter-spacing:1px;text-transform:uppercase;font-weight:700;margin-bottom:16px;display:flex;align-items:center;gap:8px}
 .analysis-card ul{list-style:none}
-.analysis-card li{padding:10px 0;border-bottom:1px solid var(--border);font-size:13px;line-height:1.7;color:rgba(255,255,255,0.8)}
+.analysis-card li{padding:10px 0;border-bottom:1px solid var(--border);font-size:14px;line-height:1.7;color:#374151}
 .analysis-card li:last-child{border-bottom:none}
 .analysis-card li::before{content:attr(data-icon);margin-right:8px}
 
@@ -123,33 +126,34 @@ tr:hover td{background:rgba(255,255,255,0.02)}
 .kol-card{
   background:var(--card);border:1px solid var(--border);border-radius:12px;padding:16px;
   display:flex;flex-direction:column;gap:10px;animation:fadeUp .5s ease both;
+  box-shadow:0 1px 6px rgba(0,0,0,0.04);
 }
 .kol-header{display:flex;align-items:center;gap:10px}
 .kol-avatar{
   width:36px;height:36px;border-radius:50%;
-  background:linear-gradient(135deg,var(--red),var(--cyan));
+  background:linear-gradient(135deg,#E8123A,#008B86);
   display:flex;align-items:center;justify-content:center;font-size:14px;flex-shrink:0;
 }
-.kol-name{font-size:13px;font-weight:600;color:var(--cyan)}
+.kol-name{font-size:13px;font-weight:600;color:#008B86}
 .kol-date{font-size:11px;color:var(--muted)}
 .kol-stats{display:flex;gap:12px;flex-wrap:wrap}
 .kol-stat{display:flex;flex-direction:column;gap:2px}
 .kol-stat-val{font-size:15px;font-weight:700;font-family:'Space Mono';color:var(--text)}
 .kol-stat-label{font-size:10px;color:var(--muted);text-transform:uppercase;letter-spacing:1px}
-.kol-gmv-bar{background:rgba(255,255,255,0.06);border-radius:6px;height:4px;margin-top:4px}
-.kol-gmv-fill{height:4px;border-radius:6px;background:linear-gradient(90deg,var(--red),var(--cyan))}
+.kol-gmv-bar{background:#E5E7EB;border-radius:6px;height:4px;margin-top:4px}
+.kol-gmv-fill{height:4px;border-radius:6px;background:linear-gradient(90deg,#E8123A,#008B86)}
 
 /* Summary box */
 .summary-box{
-  background:linear-gradient(135deg,rgba(254,44,85,0.08),rgba(37,244,238,0.05));
-  border:1px solid rgba(37,244,238,0.2);border-radius:var(--radius);padding:28px;
-  animation:fadeUp .5s ease both;
+  background:linear-gradient(135deg,#FFF5F7,#F0FAFA);
+  border:1px solid #E2E6EF;border-radius:var(--radius);padding:28px;
+  animation:fadeUp .5s ease both;box-shadow:0 1px 8px rgba(0,0,0,0.04);
 }
-.summary-box p{font-size:14px;line-height:1.9;color:rgba(255,255,255,0.75)}
+.summary-box p{font-size:15px;line-height:2;color:#374151}
 
 /* Footer */
-.footer{text-align:center;padding:48px 20px 0;color:var(--muted);font-size:12px;line-height:2}
-.footer strong{color:var(--cyan)}
+.footer{text-align:center;padding:48px 20px 0;color:var(--muted);font-size:13px;line-height:2}
+.footer strong{color:#008B86}
 </style>
 </head>
 <body>
@@ -168,38 +172,38 @@ tr:hover td{background:rgba(255,255,255,0.02)}
 <div class="section">
   <div class="section-title">核心指標 KPI</div>
   <div class="kpi-grid">
-    <div class="kpi-card" style="--accent:var(--green)">
+    <div class="kpi-card" style="--accent:#0A8A4A">
       <div class="kpi-label">本週 GMV（Excel報告）</div>
-      <div class="kpi-value mono" style="color:var(--green)">¥48,278</div>
+      <div class="kpi-value" style="color:#0A8A4A">¥48,278</div>
       <div class="kpi-sub">上週：¥20,739</div>
       <div class="kpi-wow up">▲ ¥27,539 &nbsp;+132.8%</div>
       <div class="kpi-wow-label">vs 上週 WoW</div>
     </div>
-    <div class="kpi-card" style="--accent:var(--cyan)">
+    <div class="kpi-card" style="--accent:#008B86">
       <div class="kpi-label">短影片 GMV</div>
-      <div class="kpi-value mono" style="color:var(--cyan)">¥6,568</div>
+      <div class="kpi-value" style="color:#008B86">¥6,568</div>
       <div class="kpi-sub">上週：¥5,500</div>
       <div class="kpi-wow up">▲ ¥1,068 &nbsp;+19.4%</div>
       <div class="kpi-wow-label">vs 上週 WoW</div>
     </div>
-    <div class="kpi-card" style="--accent:var(--red)">
+    <div class="kpi-card" style="--accent:#E8123A">
       <div class="kpi-label">官方影片 累計播放量</div>
-      <div class="kpi-value mono" style="color:var(--red)">15,106</div>
+      <div class="kpi-value" style="color:#E8123A">15,106</div>
       <div class="kpi-sub">上週快照：12,587</div>
       <div class="kpi-wow up">▲ 2,519 &nbsp;+20.0%</div>
       <div class="kpi-wow-label">新增播放 WoW</div>
     </div>
-    <div class="kpi-card" style="--accent:var(--red)">
+    <div class="kpi-card" style="--accent:#E8123A">
       <div class="kpi-label">達人投稿 曝光</div>
-      <div class="kpi-value mono" style="color:var(--red)">103,332</div>
+      <div class="kpi-value" style="color:#E8123A">103,332</div>
       <div class="kpi-sub">23 位 KOL 商品展示次數</div>
-      <div class="kpi-note">單週曝光已突破 10 萬次</div>
+      <div class="kpi-note" style="color:#9CA3AF">單週曝光已突破 10 萬次</div>
     </div>
-    <div class="kpi-card" style="--accent:var(--yellow)">
+    <div class="kpi-card" style="--accent:#B8860B">
       <div class="kpi-label">達人 GMV</div>
-      <div class="kpi-value mono" style="color:var(--yellow)">¥14,157</div>
+      <div class="kpi-value" style="color:#B8860B">¥14,157</div>
       <div class="kpi-sub">5 位達人產生訂單（共 6 單）</div>
-      <div class="kpi-note">Top KOL @koinudesuyo ¥5,525</div>
+      <div class="kpi-note" style="color:#9CA3AF">Top KOL @koinudesuyo ¥5,525</div>
     </div>
   </div>
 </div>
@@ -367,10 +371,10 @@ const KOLS = [
 ];
 
 const CAT_COLOR = {
-  '珍珠':'rgba(37,244,238,',
-  '芒果乾':'rgba(255,165,0,',
-  '台灣拌麵':'rgba(254,44,85,',
-  '火鍋湯底':'rgba(147,51,234,'
+  '珍珠':'rgba(13,148,136,',
+  '芒果乾':'rgba(245,158,11,',
+  '台灣拌麵':'rgba(232,18,58,',
+  '火鍋湯底':'rgba(124,58,237,'
 };
 const CAT_BADGE = {
   '珍珠':'pearl','芒果乾':'mango','台灣拌麵':'noodle','火鍋湯底':'hotpot'
@@ -387,14 +391,14 @@ new Chart(document.getElementById('categoryChart'), {
     labels: cats,
     datasets:[{
       data: catPlays,
-      backgroundColor:['rgba(37,244,238,0.75)','rgba(254,44,85,0.75)','rgba(255,165,0,0.75)','rgba(147,51,234,0.75)'],
-      borderColor:'rgba(255,255,255,0.1)',borderWidth:1,
+      backgroundColor:['#0D9488','#E8123A','#F59E0B','#7C3AED'],
+      borderColor:'#fff',borderWidth:2,
     }]
   },
   options:{
     responsive:true,cutout:'60%',
     plugins:{
-      legend:{position:'bottom',labels:{color:'#8B9AB0',font:{size:12},padding:14,
+      legend:{position:'bottom',labels:{color:'#374151',font:{size:13},padding:14,
         generateLabels(chart){
           const data=chart.data;
           return data.labels.map((label,i)=>{
@@ -427,7 +431,7 @@ new Chart(document.getElementById('categoryChart'), {
         const pct=((val/totalPlays)*100).toFixed(1)+'%';
         const{x,y}=arc.tooltipPosition();
         ctx.save();
-        ctx.fillStyle='#fff';ctx.font='bold 12px Space Mono, monospace';
+        ctx.fillStyle='#111';ctx.font='bold 13px Space Mono, monospace';
         ctx.textAlign='center';ctx.textBaseline='middle';
         ctx.shadowColor='rgba(0,0,0,0.8)';ctx.shadowBlur=4;
         ctx.fillText(pct,x,y);
@@ -445,20 +449,20 @@ VIDEOS.forEach(v=>{
   const catColor = CAT_COLOR[v.cat]||'rgba(255,255,255,';
   tbody.innerHTML += `<tr>
     <td style="max-width:260px">
-      <div style="font-size:12px;color:#E8EAF0;line-height:1.4;margin-bottom:6px">${v.title}</div>
+      <div style="font-size:13px;color:#111827;line-height:1.5;margin-bottom:6px">${v.title}</div>
       <div class="plays-bar">
-        <div class="bar-wrap" style="width:120px"><div class="bar-fill" style="width:${pct}%;--fill:${catColor}0.7)"></div></div>
+        <div class="bar-wrap" style="width:120px"><div class="bar-fill" style="width:${pct}%;--fill:${catColor}0.8)"></div></div>
         <span class="plays-num">${v.plays.toLocaleString()}</span>
       </div>
     </td>
     <td><span class="badge ${CAT_BADGE[v.cat]||''}">${v.cat}</span></td>
-    <td style="color:#8B9AB0;font-size:12px;white-space:nowrap">${v.date.slice(5)}</td>
-    <td class="mono" style="font-size:13px">${v.plays.toLocaleString()}</td>
-    <td class="mono" style="color:#FE2C55">${v.likes}</td>
-    <td class="mono" style="color:#8B9AB0">${v.comments}</td>
-    <td class="mono" style="color:#8B9AB0">${v.shares}</td>
-    <td class="mono" style="color:${v.clicks>20?'#22D47B':'#8B9AB0'}">${v.clicks}</td>
-    <td class="mono" style="color:${v.gmv>0?'#22D47B':'#4a5568'}">${v.gmv>0?'¥'+v.gmv.toLocaleString():'—'}</td>
+    <td style="color:#6B7280;font-size:13px;white-space:nowrap">${v.date.slice(5)}</td>
+    <td class="mono" style="font-size:14px;font-weight:600">${v.plays.toLocaleString()}</td>
+    <td class="mono" style="color:#E8123A;font-weight:600">${v.likes}</td>
+    <td class="mono" style="color:#6B7280">${v.comments}</td>
+    <td class="mono" style="color:#6B7280">${v.shares}</td>
+    <td class="mono" style="color:${v.clicks>20?'#0A8A4A':'#374151'};font-weight:${v.clicks>20?700:400}">${v.clicks}</td>
+    <td class="mono" style="color:${v.gmv>0?'#0A8A4A':'#9CA3AF'};font-weight:${v.gmv>0?700:400}">${v.gmv>0?'¥'+v.gmv.toLocaleString():'—'}</td>
   </tr>`;
 });
 
@@ -478,7 +482,7 @@ KOLS.slice(0, 10).forEach((k, i) => {
     </div>
     <div class="kol-stats">
       <div class="kol-stat">
-        <div class="kol-stat-val" style="color:${k.gmv_aff>0?'#22D47B':'#4a5568'}">${k.gmv_aff>0?'¥'+k.gmv_aff.toLocaleString():'¥0'}</div>
+        <div class="kol-stat-val" style="color:${k.gmv_aff>0?'#0A8A4A':'#9CA3AF'}">${k.gmv_aff>0?'¥'+k.gmv_aff.toLocaleString():'¥0'}</div>
         <div class="kol-stat-label">GMV</div>
       </div>
       <div class="kol-stat">
@@ -490,7 +494,7 @@ KOLS.slice(0, 10).forEach((k, i) => {
         <div class="kol-stat-label">CTR</div>
       </div>
       <div class="kol-stat">
-        <div class="kol-stat-val" style="color:#FE2C55">${k.likes}</div>
+        <div class="kol-stat-val" style="color:#E8123A">${k.likes}</div>
         <div class="kol-stat-label">按讚</div>
       </div>
     </div>
@@ -504,13 +508,13 @@ KOLS.slice(0, 10).forEach(k => {
   const rankClass = k.rank<=3 ? `rank-${k.rank}` : 'rank-n';
   kolTbody.innerHTML += `<tr>
     <td><span class="rank-num ${rankClass}">${k.rank}</span></td>
-    <td style="color:#25F4EE;font-weight:600">${k.creator}</td>
-    <td style="color:#8B9AB0;font-size:12px">${k.date}</td>
-    <td class="mono">${k.imp.toLocaleString()}</td>
-    <td class="mono" style="color:${k.ctr>2.5?'#22D47B':'#E8EAF0'}">${k.ctr.toFixed(2)}%</td>
-    <td class="mono" style="color:#FE2C55">${k.likes}</td>
-    <td class="mono" style="color:${k.orders>0?'#22D47B':'#4a5568'}">${k.orders}</td>
-    <td class="mono" style="color:${k.gmv_aff>0?'#22D47B':'#4a5568'};font-weight:${k.gmv_aff>0?700:400}">${k.gmv_aff>0?'¥'+k.gmv_aff.toLocaleString():'—'}</td>
+    <td style="color:#008B86;font-weight:600">${k.creator}</td>
+    <td style="color:#6B7280;font-size:13px">${k.date}</td>
+    <td class="mono" style="font-weight:600">${k.imp.toLocaleString()}</td>
+    <td class="mono" style="color:${k.ctr>2.5?'#0A8A4A':'#374151'};font-weight:${k.ctr>2.5?700:400}">${k.ctr.toFixed(2)}%</td>
+    <td class="mono" style="color:#E8123A;font-weight:600">${k.likes}</td>
+    <td class="mono" style="color:${k.orders>0?'#0A8A4A':'#9CA3AF'};font-weight:${k.orders>0?700:400}">${k.orders}</td>
+    <td class="mono" style="color:${k.gmv_aff>0?'#0A8A4A':'#9CA3AF'};font-weight:${k.gmv_aff>0?700:400}">${k.gmv_aff>0?'¥'+k.gmv_aff.toLocaleString():'—'}</td>
   </tr>`;
 });
 </script>
