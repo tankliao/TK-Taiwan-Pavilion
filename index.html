@@ -210,11 +210,15 @@ tr:hover td{background:#F9FAFB}
 
 <!-- CHARTS -->
 <div class="section">
-  <div class="section-title">品類分佈</div>
-  <div style="max-width:500px;margin:0 auto">
+  <div class="section-title">分佈分析</div>
+  <div class="chart-grid">
     <div class="chart-card">
       <h3>官方影片 品類分佈（累計播放量佔比）</h3>
-      <canvas id="categoryChart" height="220"></canvas>
+      <canvas id="categoryChart" height="260"></canvas>
+    </div>
+    <div class="chart-card">
+      <h3>本週 GMV 來源分佈（¥48,278）</h3>
+      <canvas id="gmvChart" height="260"></canvas>
     </div>
   </div>
 </div>
@@ -381,64 +385,96 @@ const CAT_BADGE = {
 };
 
 // ===== CHARTS =====
-// Category donut with percentage labels
+const sharedDonutPlugin = {
+  id:'pctLabels',
+  afterDatasetsDraw(chart){
+    const{ctx,data}=chart;
+    const total=data.datasets[0].data.reduce((a,b)=>a+b,0);
+    chart.getDatasetMeta(0).data.forEach((arc,i)=>{
+      const val=data.datasets[0].data[i];
+      if(!val||val/total<0.03) return;
+      const pct=((val/total)*100).toFixed(1)+'%';
+      const angle=(arc.startAngle+arc.endAngle)/2;
+      const r=(arc.outerRadius+arc.innerRadius)/2;
+      const x=arc.x+Math.cos(angle)*r;
+      const y=arc.y+Math.sin(angle)*r;
+      ctx.save();
+      ctx.font='bold 15px "Space Mono", monospace';
+      ctx.textAlign='center';ctx.textBaseline='middle';
+      // White outline for readability
+      ctx.lineWidth=4;ctx.strokeStyle='rgba(255,255,255,0.9)';
+      ctx.strokeText(pct,x,y);
+      ctx.fillStyle='#111';
+      ctx.fillText(pct,x,y);
+      ctx.restore();
+    });
+  }
+};
+
+// Category donut
 const cats = ['珍珠','台灣拌麵','芒果乾','火鍋湯底'];
 const catPlays = cats.map(c => VIDEOS.filter(v=>v.cat===c).reduce((s,v)=>s+v.plays,0));
 const totalPlays = catPlays.reduce((a,b)=>a+b,0);
+const catColors = ['#0D9488','#E8123A','#F59E0B','#7C3AED'];
 new Chart(document.getElementById('categoryChart'), {
   type:'doughnut',
   data:{
     labels: cats,
-    datasets:[{
-      data: catPlays,
-      backgroundColor:['#0D9488','#E8123A','#F59E0B','#7C3AED'],
-      borderColor:'#fff',borderWidth:2,
-    }]
+    datasets:[{data:catPlays,backgroundColor:catColors,borderColor:'#fff',borderWidth:3}]
   },
   options:{
-    responsive:true,cutout:'60%',
+    responsive:true,cutout:'55%',
     plugins:{
-      legend:{position:'bottom',labels:{color:'#374151',font:{size:13},padding:14,
+      legend:{position:'bottom',labels:{color:'#374151',font:{size:13},padding:16,
         generateLabels(chart){
-          const data=chart.data;
-          return data.labels.map((label,i)=>{
-            const val=data.datasets[0].data[i];
+          return chart.data.labels.map((label,i)=>{
+            const val=chart.data.datasets[0].data[i];
             const pct=((val/totalPlays)*100).toFixed(1);
             return{text:`${label}  ${pct}%  (${val.toLocaleString()})`,
-              fillStyle:data.datasets[0].backgroundColor[i],
-              strokeStyle:'transparent',index:i};
+              fillStyle:catColors[i],strokeStyle:'transparent',index:i};
           });
         }
       }},
       tooltip:{callbacks:{label:ctx=>{
         const val=ctx.parsed;const pct=((val/totalPlays)*100).toFixed(1);
         return ` ${ctx.label}: ${val.toLocaleString()} 次 (${pct}%)`;
-      }}},
-      datalabels:{
-        color:'#fff',font:{size:13,weight:'bold'},
-        formatter:(val)=>((val/totalPlays)*100).toFixed(1)+'%',
-        anchor:'center',align:'center',
-      }
+      }}}
     }
   },
-  plugins:[{
-    id:'pctLabels',
-    afterDatasetsDraw(chart){
-      const{ctx,data}=chart;
-      chart.getDatasetMeta(0).data.forEach((arc,i)=>{
-        const val=data.datasets[0].data[i];
-        if(!val) return;
-        const pct=((val/totalPlays)*100).toFixed(1)+'%';
-        const{x,y}=arc.tooltipPosition();
-        ctx.save();
-        ctx.fillStyle='#111';ctx.font='bold 13px Space Mono, monospace';
-        ctx.textAlign='center';ctx.textBaseline='middle';
-        ctx.shadowColor='rgba(0,0,0,0.8)';ctx.shadowBlur=4;
-        ctx.fillText(pct,x,y);
-        ctx.restore();
-      });
+  plugins:[sharedDonutPlugin]
+});
+
+// GMV donut
+const gmvCats = ['商品卡', '達人投稿', '短影片'];
+const gmvVals = [27533, 14157, 6588];
+const gmvTotal = gmvVals.reduce((a,b)=>a+b,0);
+const gmvColors = ['#2563EB','#F59E0B','#0D9488'];
+new Chart(document.getElementById('gmvChart'), {
+  type:'doughnut',
+  data:{
+    labels: gmvCats,
+    datasets:[{data:gmvVals,backgroundColor:gmvColors,borderColor:'#fff',borderWidth:3}]
+  },
+  options:{
+    responsive:true,cutout:'55%',
+    plugins:{
+      legend:{position:'bottom',labels:{color:'#374151',font:{size:13},padding:16,
+        generateLabels(chart){
+          return chart.data.labels.map((label,i)=>{
+            const val=chart.data.datasets[0].data[i];
+            const pct=((val/gmvTotal)*100).toFixed(1);
+            return{text:`${label}  ${pct}%  (¥${val.toLocaleString()})`,
+              fillStyle:gmvColors[i],strokeStyle:'transparent',index:i};
+          });
+        }
+      }},
+      tooltip:{callbacks:{label:ctx=>{
+        const val=ctx.parsed;const pct=((val/gmvTotal)*100).toFixed(1);
+        return ` ${ctx.label}: ¥${val.toLocaleString()} (${pct}%)`;
+      }}}
     }
-  }]
+  },
+  plugins:[sharedDonutPlugin]
 });
 
 // ===== VIDEO TABLE =====
