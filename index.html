@@ -3,1475 +3,568 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>慶豐富 × TikTok Shop US — 管理後台</title>
-<link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
-<script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.js"></script>
+<title>TikTok Shop Taiwan Pavilion 週報 2026/04/06</title>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@400;500;700&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
 <style>
-:root {
-  --bg: #f7f6f3;
-  --surface: #ffffff;
-  --surface2: #f0ede8;
-  --border: rgba(0,0,0,0.08);
-  --border2: rgba(0,0,0,0.14);
-  --text: #1a1916;
-  --text2: #6b6860;
-  --text3: #a09e99;
-  --accent: #1a1916;
-  --green: #2d7a4f;
-  --green-bg: #e8f5ee;
-  --red: #b83232;
-  --red-bg: #fbeaea;
-  --amber: #9a6200;
-  --amber-bg: #fef3da;
-  --blue: #1a5fa8;
-  --blue-bg: #e8f0fb;
-  --sidebar-w: 210px;
-  --radius: 10px;
-  --radius-sm: 6px;
+:root{
+  --bg:#F5F6FA;--card:#FFFFFF;--border:#E2E6EF;
+  --red:#E8123A;--cyan:#008B86;--green:#0A8A4A;--yellow:#B8860B;
+  --text:#111827;--muted:#6B7280;--radius:16px;
 }
+*{box-sizing:border-box;margin:0;padding:0}
+body{background:var(--bg);color:var(--text);font-family:'Noto Sans TC',sans-serif;min-height:100vh;padding:0 0 60px}
+.mono{font-family:'Space Mono',monospace}
 
-* { box-sizing: border-box; margin: 0; padding: 0; }
-
-body {
-  font-family: 'DM Sans', sans-serif;
-  background: var(--bg);
-  color: var(--text);
-  font-size: 14px;
-  line-height: 1.5;
-  min-height: 100vh;
+/* Header */
+.header{
+  background:linear-gradient(135deg,#1a0a12,#0a1a1f);
+  border-bottom:1px solid #2a1f2a;
+  padding:40px 32px 32px;
+  text-align:center;
+  position:relative;overflow:hidden;
 }
-
-/* ── SIDEBAR ── */
-.sidebar {
-  position: fixed; left: 0; top: 0; bottom: 0; width: var(--sidebar-w);
-  background: var(--surface);
-  border-right: 1px solid var(--border);
-  display: flex; flex-direction: column;
-  padding: 1.5rem 0.875rem;
-  z-index: 50;
+.header::before{
+  content:'';position:absolute;inset:0;
+  background:radial-gradient(ellipse 80% 60% at 50% 0%,rgba(254,44,85,0.15),transparent);
 }
-
-.logo {
-  display: flex; align-items: center; gap: 10px;
-  padding: 0 0.25rem; margin-bottom: 1.75rem;
+.header-logo{font-size:13px;color:#25F4EE;letter-spacing:4px;text-transform:uppercase;margin-bottom:12px}
+.header h1{font-size:clamp(26px,4vw,42px);font-weight:700;letter-spacing:-0.5px;margin-bottom:8px;color:#fff}
+.header h1 span{color:#FE2C55}
+.header-meta{font-size:14px;color:rgba(255,255,255,0.5);margin-top:6px}
+.header-badge{
+  display:inline-flex;align-items:center;gap:6px;
+  background:rgba(34,212,123,0.15);border:1px solid rgba(34,212,123,0.3);
+  color:#22D47B;padding:5px 14px;border-radius:20px;font-size:13px;margin-top:12px
 }
-.logo-mark {
-  width: 32px; height: 32px; border-radius: 8px;
-  background: #010101; display: flex; align-items: center; justify-content: center;
-  color: white; font-size: 13px; font-weight: 500; letter-spacing: -0.5px; flex-shrink: 0;
+.header-badge::before{content:'●';animation:pulse 2s infinite}
+@keyframes pulse{0%,100%{opacity:1}50%{opacity:0.4}}
+
+/* Layout */
+.container{max-width:1400px;margin:0 auto;padding:0 24px}
+.section{margin-top:40px}
+.section-title{
+  font-size:14px;color:var(--cyan);letter-spacing:3px;text-transform:uppercase;font-weight:700;
+  margin-bottom:20px;display:flex;align-items:center;gap:10px;
 }
-.logo-text { line-height: 1.2; }
-.logo-title { font-size: 13px; font-weight: 500; color: var(--text); }
-.logo-sub { font-size: 10px; color: var(--text3); margin-top: 1px; }
+.section-title::after{content:'';flex:1;height:1px;background:var(--border)}
 
-.nav-section { margin-bottom: 0.25rem; }
-.nav-label { font-size: 10px; color: var(--text3); letter-spacing: 0.07em; text-transform: uppercase; padding: 0 0.75rem; margin: 1rem 0 0.375rem; }
-
-.nav-btn {
-  display: flex; align-items: center; gap: 9px;
-  width: 100%; padding: 7px 10px; border-radius: var(--radius-sm);
-  border: none; background: none; cursor: pointer;
-  font-family: 'DM Sans', sans-serif; font-size: 13px; color: var(--text2);
-  text-align: left; transition: all 0.12s;
+/* KPI Cards - 5 equal columns, no gap */
+.kpi-grid{display:grid;grid-template-columns:repeat(5,1fr);gap:0;border:1px solid var(--border);border-radius:var(--radius);overflow:hidden;box-shadow:0 2px 16px rgba(0,0,0,0.07)}
+.kpi-card{
+  background:var(--card);border-right:1px solid var(--border);
+  padding:28px 24px;position:relative;overflow:hidden;
+  animation:fadeUp .5s ease both;
 }
-.nav-btn:hover { background: var(--surface2); color: var(--text); }
-.nav-btn.active { background: var(--text); color: white; }
-.nav-btn .icon { width: 16px; text-align: center; font-size: 13px; flex-shrink: 0; }
-
-.sidebar-footer {
-  margin-top: auto; padding: 0.75rem 0.25rem 0;
-  border-top: 1px solid var(--border);
+.kpi-card:last-child{border-right:none}
+@media(max-width:900px){.kpi-grid{grid-template-columns:repeat(2,1fr)}.kpi-card{border-bottom:1px solid var(--border)}}
+@media(max-width:500px){.kpi-grid{grid-template-columns:1fr}}
+.kpi-card:nth-child(1){animation-delay:.05s}
+.kpi-card:nth-child(2){animation-delay:.1s}
+.kpi-card:nth-child(3){animation-delay:.15s}
+.kpi-card:nth-child(4){animation-delay:.2s}
+.kpi-card:nth-child(5){animation-delay:.25s}
+@keyframes fadeUp{from{opacity:0;transform:translateY(16px)}to{opacity:1;transform:translateY(0)}}
+.kpi-card::before{
+  content:'';position:absolute;top:0;left:0;right:0;height:4px;
+  background:var(--accent,var(--cyan));
 }
-.update-badge {
-  font-size: 10px; color: var(--text3);
-  display: flex; align-items: center; gap: 5px; padding: 0 0.25rem;
+.kpi-label{font-size:12px;color:var(--muted);letter-spacing:1px;font-weight:600;margin-bottom:12px;text-transform:uppercase}
+.kpi-value{font-size:36px;font-weight:700;font-family:'Space Mono',monospace;line-height:1.1;color:var(--val-color,var(--text))}
+.kpi-sub{font-size:13px;color:var(--muted);margin-top:8px}
+.kpi-note{font-size:12px;color:#9CA3AF;margin-top:4px}
+.kpi-wow{display:inline-flex;align-items:center;gap:4px;margin-top:10px;padding:4px 12px;border-radius:8px;font-size:13px;font-weight:700;font-family:'Space Mono',monospace}
+.kpi-wow.up{background:#DCFCE7;color:#166534;border:1px solid #BBF7D0}
+.kpi-wow.down{background:#FEE2E2;color:#991B1B;border:1px solid #FECACA}
+.kpi-wow-label{font-size:11px;color:#9CA3AF;margin-top:4px}
+
+/* Chart area */
+.chart-grid{display:grid;grid-template-columns:1fr 1fr;gap:20px}
+@media(max-width:700px){.chart-grid{grid-template-columns:1fr}}
+.chart-card{
+  background:var(--card);border:1px solid var(--border);border-radius:var(--radius);padding:24px;
+  box-shadow:0 1px 8px rgba(0,0,0,0.05);animation:fadeUp .5s ease both;
 }
-.update-dot { width: 6px; height: 6px; border-radius: 50%; background: var(--green); flex-shrink: 0; }
+.chart-card h3{font-size:14px;color:var(--muted);font-weight:600;margin-bottom:20px}
 
-/* ── MAIN ── */
-.main {
-  margin-left: var(--sidebar-w);
-  padding: 2rem 2.25rem;
-  min-height: 100vh;
+/* Table */
+.table-card{background:var(--card);border:1px solid var(--border);border-radius:var(--radius);overflow:hidden;animation:fadeUp .5s ease both;box-shadow:0 1px 8px rgba(0,0,0,0.05)}
+.table-scroll{overflow-x:auto}
+table{width:100%;border-collapse:collapse}
+th{background:#F9FAFB;color:var(--muted);font-size:12px;letter-spacing:1px;text-transform:uppercase;padding:13px 16px;text-align:left;white-space:nowrap;border-bottom:1px solid var(--border)}
+td{padding:13px 16px;border-top:1px solid var(--border);font-size:14px;vertical-align:middle;color:var(--text)}
+tr:hover td{background:#F9FAFB}
+.badge{display:inline-flex;align-items:center;padding:3px 10px;border-radius:20px;font-size:12px;font-weight:600;gap:4px}
+.badge.pearl{background:#E0FAF9;color:#007A75;border:1px solid #A7F3F0}
+.badge.mango{background:#FEF3C7;color:#92400E;border:1px solid #FDE68A}
+.badge.noodle{background:#FEE2E2;color:#991B1B;border:1px solid #FECACA}
+.badge.hotpot{background:#F3E8FF;color:#6B21A8;border:1px solid #DDD6FE}
+.bar-wrap{background:#E5E7EB;border-radius:4px;height:6px;width:100%;min-width:80px}
+.bar-fill{height:6px;border-radius:4px;background:var(--fill,#008B86)}
+.rank-num{
+  width:28px;height:28px;border-radius:50%;display:inline-flex;align-items:center;justify-content:center;
+  font-size:12px;font-weight:700;font-family:'Space Mono',monospace;
 }
+.rank-1{background:#FEF9C3;color:#854D0E;border:1px solid #FDE047}
+.rank-2{background:#F1F5F9;color:#475569;border:1px solid #CBD5E1}
+.rank-3{background:#FFF7ED;color:#9A3412;border:1px solid #FED7AA}
+.rank-n{background:#F9FAFB;color:var(--muted);border:1px solid var(--border)}
+.plays-bar{display:flex;align-items:center;gap:8px}
+.plays-num{font-family:'Space Mono';font-size:13px;color:var(--text);min-width:50px}
 
-.page { display: none; }
-.page.active { display: block; }
+/* AI Analysis */
+.analysis-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:16px}
+.analysis-card{background:var(--card);border:1px solid var(--border);border-radius:var(--radius);padding:24px;animation:fadeUp .5s ease both;box-shadow:0 1px 8px rgba(0,0,0,0.05)}
+.analysis-card h3{font-size:14px;letter-spacing:1px;text-transform:uppercase;font-weight:700;margin-bottom:16px;display:flex;align-items:center;gap:8px}
+.analysis-card ul{list-style:none}
+.analysis-card li{padding:10px 0;border-bottom:1px solid var(--border);font-size:14px;line-height:1.7;color:#374151}
+.analysis-card li:last-child{border-bottom:none}
+.analysis-card li::before{content:attr(data-icon);margin-right:8px}
 
-.page-header { margin-bottom: 1.75rem; }
-.page-title { font-size: 20px; font-weight: 500; color: var(--text); }
-.page-sub { font-size: 13px; color: var(--text2); margin-top: 3px; }
-
-/* ── METRICS ── */
-.metrics { display: grid; grid-template-columns: repeat(4, minmax(0,1fr)); gap: 12px; margin-bottom: 1.5rem; }
-.metric {
-  background: var(--surface); border: 1px solid var(--border);
-  border-radius: var(--radius); padding: 1rem 1.125rem;
+/* KOL section */
+.kol-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:14px}
+.kol-card{
+  background:var(--card);border:1px solid var(--border);border-radius:12px;padding:16px;
+  display:flex;flex-direction:column;gap:10px;animation:fadeUp .5s ease both;
+  box-shadow:0 1px 6px rgba(0,0,0,0.04);
 }
-.metric-label { font-size: 11px; color: var(--text3); margin-bottom: 5px; text-transform: uppercase; letter-spacing: 0.06em; }
-.metric-value { font-size: 24px; font-weight: 300; color: var(--text); letter-spacing: -0.5px; }
-.metric-delta { font-size: 11px; margin-top: 4px; }
-.up { color: var(--green); }
-.down { color: var(--red); }
-
-/* ── CARDS ── */
-.card {
-  background: var(--surface); border: 1px solid var(--border);
-  border-radius: var(--radius); padding: 1.25rem;
-  margin-bottom: 1.25rem;
+.kol-header{display:flex;align-items:center;gap:10px}
+.kol-avatar{
+  width:36px;height:36px;border-radius:50%;
+  background:linear-gradient(135deg,#E8123A,#008B86);
+  display:flex;align-items:center;justify-content:center;font-size:14px;flex-shrink:0;
 }
-.card-title { font-size: 13px; font-weight: 500; color: var(--text); margin-bottom: 1rem; }
-.two-col { display: grid; grid-template-columns: 1fr 1fr; gap: 1.25rem; margin-bottom: 1.25rem; }
+.kol-name{font-size:13px;font-weight:600;color:#008B86}
+.kol-date{font-size:11px;color:var(--muted)}
+.kol-stats{display:flex;gap:12px;flex-wrap:wrap}
+.kol-stat{display:flex;flex-direction:column;gap:2px}
+.kol-stat-val{font-size:15px;font-weight:700;font-family:'Space Mono';color:var(--text)}
+.kol-stat-label{font-size:10px;color:var(--muted);text-transform:uppercase;letter-spacing:1px}
+.kol-gmv-bar{background:#E5E7EB;border-radius:6px;height:4px;margin-top:4px}
+.kol-gmv-fill{height:4px;border-radius:6px;background:linear-gradient(90deg,#E8123A,#008B86)}
 
-/* ── CHART LEGEND ── */
-.legend { display: flex; gap: 14px; flex-wrap: wrap; margin-bottom: 10px; }
-.legend-item { display: flex; align-items: center; gap: 5px; font-size: 11px; color: var(--text2); }
-.legend-dot { width: 8px; height: 8px; border-radius: 2px; flex-shrink: 0; }
+/* Summary box */
+.summary-box{
+  background:linear-gradient(135deg,#FFF5F7,#F0FAFA);
+  border:1px solid #E2E6EF;border-radius:var(--radius);padding:28px;
+  animation:fadeUp .5s ease both;box-shadow:0 1px 8px rgba(0,0,0,0.04);
+}
+.summary-box p{font-size:15px;line-height:2;color:#374151}
 
-/* ── TABLE ── */
-table { width: 100%; border-collapse: collapse; font-size: 13px; }
-th { text-align: left; font-size: 11px; font-weight: 500; color: var(--text3); text-transform: uppercase; letter-spacing: 0.06em; padding: 8px 10px; border-bottom: 1px solid var(--border); }
-td { padding: 10px 10px; border-bottom: 1px solid var(--border); color: var(--text); vertical-align: middle; }
-tr:last-child td { border-bottom: none; }
-tbody tr:hover td { background: var(--bg); }
-
-/* ── BADGE ── */
-.badge { display: inline-flex; align-items: center; font-size: 11px; font-weight: 500; padding: 2px 8px; border-radius: 20px; }
-.badge-live { background: var(--green-bg); color: var(--green); }
-.badge-review { background: var(--amber-bg); color: var(--amber); }
-.badge-draft { background: var(--surface2); color: var(--text2); }
-.badge-out { background: var(--red-bg); color: var(--red); }
-.badge-low { background: var(--amber-bg); color: var(--amber); }
-.badge-ok { background: var(--green-bg); color: var(--green); }
-.badge-blue { background: var(--blue-bg); color: var(--blue); }
-
-/* ── SEARCH / FILTER ── */
-.toolbar { display: flex; gap: 8px; margin-bottom: 1rem; flex-wrap: wrap; }
-.toolbar input, .toolbar select {
-  font-family: 'DM Sans', sans-serif; font-size: 13px;
-  padding: 7px 11px; border: 1px solid var(--border2);
-  border-radius: var(--radius-sm); background: var(--surface); color: var(--text);
-  outline: none;
-}
-.toolbar input:focus, .toolbar select:focus { border-color: var(--text); }
-.toolbar input { flex: 1; min-width: 200px; }
-
-/* ── PROGRESS ── */
-.progress-wrap { height: 5px; background: var(--surface2); border-radius: 3px; overflow: hidden; margin-top: 8px; }
-.progress-fill { height: 100%; border-radius: 3px; background: var(--green); }
-
-/* ── TIMELINE ── */
-.timeline { display: flex; flex-direction: column; }
-.tl-item { display: flex; gap: 14px; padding-bottom: 1.5rem; }
-.tl-item:last-child { padding-bottom: 0; }
-.tl-left { display: flex; flex-direction: column; align-items: center; width: 18px; flex-shrink: 0; }
-.tl-dot { width: 10px; height: 10px; border-radius: 50%; flex-shrink: 0; margin-top: 3px; }
-.tl-dot.done { background: var(--green); }
-.tl-dot.active { background: var(--blue); }
-.tl-dot.pending { background: transparent; border: 1.5px solid var(--border2); }
-.tl-line { width: 1px; flex: 1; background: var(--border); margin-top: 4px; }
-.tl-title { font-size: 13px; font-weight: 500; color: var(--text); }
-.tl-date { font-size: 11px; color: var(--text3); margin-top: 2px; }
-.tl-desc { font-size: 12px; color: var(--text2); margin-top: 4px; line-height: 1.5; }
-
-/* ── PRODUCT GRID ── */
-.cat-tabs { display: flex; gap: 6px; flex-wrap: wrap; margin-bottom: 1rem; }
-.cat-tab {
-  font-family: 'DM Sans', sans-serif; font-size: 12px; padding: 4px 12px;
-  border-radius: 20px; cursor: pointer; border: 1px solid var(--border2);
-  background: none; color: var(--text2); transition: all 0.12s;
-}
-.cat-tab:hover { background: var(--surface2); }
-.cat-tab.active { background: var(--text); color: white; border-color: var(--text); }
-
-.product-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(230px, 1fr)); gap: 12px; }
-.product-card {
-  background: var(--surface); border: 1px solid var(--border);
-  border-radius: var(--radius); overflow: hidden; cursor: pointer; transition: border-color 0.12s, box-shadow 0.12s;
-}
-.product-card:hover { border-color: var(--border2); box-shadow: 0 2px 12px rgba(0,0,0,0.06); }
-.card-img-ph {
-  width: 100%; height: 160px;
-  background: var(--surface2);
-  display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 8px;
-}
-.img-link {
-  font-size: 12px; color: var(--blue); padding: 5px 12px;
-  border: 1px solid var(--blue-bg); border-radius: var(--radius-sm);
-  background: var(--blue-bg); text-decoration: none; display: inline-flex; align-items: center; gap: 4px;
-}
-.img-link:hover { opacity: 0.8; }
-.img-count { font-size: 11px; color: var(--text3); }
-.p-body { padding: 10px 12px; }
-.p-cat { font-size: 10px; color: var(--text3); text-transform: uppercase; letter-spacing: 0.06em; margin-bottom: 3px; }
-.p-name { font-size: 13px; font-weight: 500; line-height: 1.4; margin-bottom: 8px; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
-.p-meta { display: flex; justify-content: space-between; align-items: center; }
-.p-price { font-size: 15px; font-weight: 500; }
-.p-price-orig { font-size: 11px; color: var(--text3); text-decoration: line-through; margin-left: 4px; }
-.p-footer { padding: 7px 12px; border-top: 1px solid var(--border); display: flex; gap: 5px; flex-wrap: wrap; }
-
-/* ── MODAL ── */
-.modal-bg {
-  position: fixed; inset: 0; background: rgba(0,0,0,0.35);
-  z-index: 200; display: none; align-items: center; justify-content: center; padding: 1rem;
-}
-.modal-bg.open { display: flex; }
-.modal {
-  background: var(--surface); border-radius: var(--radius);
-  max-width: 560px; width: 100%; max-height: 85vh; overflow-y: auto;
-  border: 1px solid var(--border); box-shadow: 0 20px 60px rgba(0,0,0,0.15);
-}
-.modal-head {
-  padding: 1rem 1.25rem; border-bottom: 1px solid var(--border);
-  display: flex; justify-content: space-between; align-items: flex-start; gap: 12px;
-  position: sticky; top: 0; background: var(--surface); z-index: 1;
-}
-.modal-head-title { font-size: 14px; font-weight: 500; line-height: 1.4; }
-.modal-head-cat { font-size: 11px; color: var(--text3); margin-top: 2px; }
-.modal-close { background: none; border: none; font-size: 18px; cursor: pointer; color: var(--text2); flex-shrink: 0; padding: 0 2px; }
-.modal-body { padding: 1.25rem; }
-.img-gallery { display: flex; gap: 6px; flex-wrap: wrap; margin-bottom: 1.25rem; }
-.img-gallery a {
-  font-size: 11px; color: var(--blue); padding: 4px 10px;
-  border: 1px solid var(--blue-bg); border-radius: var(--radius-sm);
-  background: var(--blue-bg); text-decoration: none;
-}
-.img-gallery a:hover { opacity: 0.8; }
-.detail-row { display: flex; gap: 10px; margin-bottom: 7px; font-size: 13px; }
-.detail-label { color: var(--text2); min-width: 75px; flex-shrink: 0; }
-.detail-val { color: var(--text); font-weight: 500; word-break: break-all; }
-.sku-table { width: 100%; border-collapse: collapse; font-size: 12px; margin-top: 1rem; }
-.sku-table th { text-align: left; padding: 6px 8px; border-bottom: 1px solid var(--border); color: var(--text3); font-size: 11px; text-transform: uppercase; letter-spacing: 0.05em; font-weight: 500; }
-.sku-table td { padding: 8px 8px; border-bottom: 1px solid var(--border); }
-.sku-table tr:last-child td { border-bottom: none; }
-
-/* ── UPLOAD ── */
-.upload-zone {
-  border: 1.5px dashed var(--border2); border-radius: var(--radius);
-  padding: 2.5rem 1rem; text-align: center; cursor: pointer; transition: background 0.12s;
-}
-.upload-zone:hover, .upload-zone.drag { background: var(--surface2); }
-.upload-zone input { display: none; }
-.upload-icon { font-size: 28px; color: var(--text3); margin-bottom: 10px; }
-.upload-zone-title { font-size: 14px; font-weight: 500; margin-bottom: 4px; }
-.upload-zone-sub { font-size: 12px; color: var(--text2); }
-.upload-btn-sm {
-  display: inline-block; margin-top: 12px; padding: 7px 18px;
-  border: 1px solid var(--border2); border-radius: var(--radius-sm);
-  font-family: 'DM Sans', sans-serif; font-size: 13px; cursor: pointer; background: none; color: var(--text);
-}
-.upload-btn-sm:hover { background: var(--surface2); }
-.upload-history { margin-top: 1rem; font-size: 12px; color: var(--text3); }
-
-/* ── LINK TABLE ── */
-a.tbl-link { color: var(--blue); text-decoration: none; font-size: 12px; font-family: 'DM Mono', monospace; }
-a.tbl-link:hover { text-decoration: underline; }
-
-/* ── EMPTY ── */
-.empty { text-align: center; padding: 3rem 1rem; color: var(--text3); font-size: 13px; }
-
-/* ── MOBILE ── */
-.bottom-nav {
-  display: none;
-  position: fixed; bottom: 0; left: 0; right: 0; z-index: 50;
-  background: var(--surface); border-top: 1px solid var(--border);
-  padding: 8px 0 calc(8px + env(safe-area-inset-bottom));
-  grid-template-columns: repeat(4, 1fr);
-}
-.bottom-nav-btn {
-  display: flex; flex-direction: column; align-items: center; gap: 3px;
-  font-family: 'DM Sans', sans-serif; font-size: 10px; color: var(--text3);
-  border: none; background: none; cursor: pointer; padding: 4px 8px;
-}
-.bottom-nav-btn.active { color: var(--text); }
-.bottom-nav-btn .bn-icon { font-size: 18px; }
-
-@media (max-width: 768px) {
-  .sidebar { display: none; }
-  .bottom-nav { display: grid; }
-  .main { margin-left: 0; padding: 1rem 1rem 80px; }
-  .metrics { grid-template-columns: repeat(2, minmax(0,1fr)); }
-  .two-col { grid-template-columns: 1fr; }
-  .page-title { font-size: 17px; }
-  table { font-size: 12px; }
-  th, td { padding: 8px 6px; }
-  .product-grid { grid-template-columns: repeat(auto-fill, minmax(160px, 1fr)); gap: 8px; }
-  .modal { max-height: 90vh; border-radius: var(--radius) var(--radius) 0 0; }
-  .modal-bg { align-items: flex-end; padding: 0; }
-  .metric-value { font-size: 20px; }
-  #progressVal { font-size: 32px !important; }
-}
+/* Footer */
+.footer{text-align:center;padding:48px 20px 0;color:var(--muted);font-size:13px;line-height:2}
+.footer strong{color:#008B86}
 </style>
 </head>
 <body>
 
-<!-- SIDEBAR -->
-<nav class="sidebar">
-  <div class="logo">
-    <div class="logo-mark">TT</div>
-    <div class="logo-text">
-      <div class="logo-title">慶豐富</div>
-      <div class="logo-sub">TikTok Shop US</div>
+<!-- HEADER -->
+<div class="header">
+  <div class="header-logo">TikTok Shop Japan</div>
+  <h1>Taiwan Pavilion <span>週報</span></h1>
+  <div class="header-meta">報告期間：2026/02/25 ～ 2026/04/13 ｜ 生成日：2026/04/13</div>
+  <div class="header-badge">運営中 · 達人投稿 33名 · 官方影片 17支</div>
+</div>
+
+<div class="container">
+
+<!-- KPI -->
+<div class="section">
+  <div class="section-title">核心指標 KPI</div>
+  <div class="kpi-grid">
+    <div class="kpi-card" style="--accent:#0A8A4A">
+      <div class="kpi-label">累計 GMV</div>
+      <div class="kpi-value" style="color:#0A8A4A">¥129,700</div>
+      <div class="kpi-sub">上週：¥48,278</div>
+      <div class="kpi-wow up">▲ ¥81,422 &nbsp;+168.7%</div>
+      <div class="kpi-wow-label">vs 上週 WoW</div>
+    </div>
+    <div class="kpi-card" style="--accent:#008B86">
+      <div class="kpi-label">短影片 GMV</div>
+      <div class="kpi-value" style="color:#008B86">¥16,802</div>
+      <div class="kpi-sub">上週：¥5,500</div>
+      <div class="kpi-wow up">▲ ¥11,302 &nbsp;+205.5%</div>
+      <div class="kpi-wow-label">vs 上週 WoW</div>
+    </div>
+    <div class="kpi-card" style="--accent:#E8123A">
+      <div class="kpi-label">官方影片 累計播放量</div>
+      <div class="kpi-value" style="color:#E8123A">21,039</div>
+      <div class="kpi-sub">上週快照：13,020</div>
+      <div class="kpi-wow up">▲ 8,019 &nbsp;+61.6%</div>
+      <div class="kpi-wow-label">新增播放 WoW</div>
+    </div>
+    <div class="kpi-card" style="--accent:#E8123A">
+      <div class="kpi-label">達人投稿 曝光</div>
+      <div class="kpi-value" style="color:#E8123A">141,746</div>
+      <div class="kpi-sub">上週：103,332</div>
+      <div class="kpi-wow up">▲ 38,414 &nbsp;+37.2%</div>
+      <div class="kpi-wow-label">vs 上週 WoW</div>
+    </div>
+    <div class="kpi-card" style="--accent:#B8860B">
+      <div class="kpi-label">達人 GMV</div>
+      <div class="kpi-value" style="color:#B8860B">¥36,025</div>
+      <div class="kpi-sub">上週：¥14,157</div>
+      <div class="kpi-wow up">▲ ¥21,868 &nbsp;+154.5%</div>
+      <div class="kpi-wow-label">vs 上週 WoW</div>
     </div>
   </div>
+</div>
 
-  <div class="nav-section">
-    <div class="nav-label">總覽</div>
-    <button class="nav-btn active" onclick="showPage('dashboard',this)">
-      <span class="icon">◻</span> 銷售總覽 Dashboard
-    </button>
-  </div>
-
-  <div class="nav-section">
-    <div class="nav-label">商品</div>
-    <button class="nav-btn" onclick="showPage('products',this)">
-      <span class="icon">◈</span> 商品管理 Products
-    </button>
-    <button class="nav-btn" onclick="showPage('links',this)">
-      <span class="icon">⊛</span> 刊登連結 Listings
-    </button>
-  </div>
-
-  <div class="nav-section">
-    <div class="nav-label">影片</div>
-    <button class="nav-btn" onclick="showPage('video',this)">
-      <span class="icon">▷</span> 影片成效 Videos
-    </button>
-  </div>
-  <div class="nav-section">
-    <div class="nav-label">專案</div>
-    <button class="nav-btn" onclick="showPage('progress',this)">
-      <span class="icon">◎</span> 專案進度 Progress
-    </button>
-    <button class="nav-btn" onclick="showPage('sop',this)">
-      <span class="icon">☰</span> 更新說明 SOP
-    </button>
-  </div>
-  <div class="sidebar-footer">
-    <div class="update-badge">
-      <div class="update-dot"></div>
-      <span id="lastUpdate">尚未載入數據</span>
+<!-- CHARTS -->
+<div class="section">
+  <div class="section-title">分佈分析</div>
+  <div class="chart-grid">
+    <div class="chart-card">
+      <h3>官方影片 品類分佈（累計播放量佔比）</h3>
+      <canvas id="categoryChart" height="260"></canvas>
+    </div>
+    <div class="chart-card">
+      <h3>本週 GMV 來源分佈（¥129,700）</h3>
+      <canvas id="gmvChart" height="260"></canvas>
     </div>
   </div>
-</nav>
+</div>
 
-<!-- MAIN -->
-<main class="main">
-
-  <!-- ① DASHBOARD -->
-  <div id="page-dashboard" class="page active">
-    <div class="page-header">
-      <div class="page-title">銷售總覽 Sales Dashboard</div>
-      <div class="page-sub" id="dashSub">載入中...</div>
-    </div>
-
-    <div class="metrics" id="trafficMetrics">
-      <div class="metric">
-        <div class="metric-label">總曝光 Impressions</div>
-        <div class="metric-value" id="m-impressions">—</div>
-      </div>
-      <div class="metric">
-        <div class="metric-label">頁面瀏覽 Page Views</div>
-        <div class="metric-value" id="m-pageviews">—</div>
-      </div>
-      <div class="metric">
-        <div class="metric-label">總銷售額 GMV</div>
-        <div class="metric-value" id="m-gmv">—</div>
-      </div>
-      <div class="metric">
-        <div class="metric-label">訂單數 Orders</div>
-        <div class="metric-value" id="m-orders">—</div>
-      </div>
-    </div>
-
-    <div class="card" style="margin-bottom:1.25rem;">
-      <div class="card-title">每日曝光趨勢 Daily Impressions</div>
-      <div style="position:relative;height:220px;"><canvas id="impressionsChart"></canvas></div>
-    </div>
-
-    <div class="two-col">
-      <div class="card">
-        <div class="card-title">商品品類分佈 Category Breakdown</div>
-        <div id="catLegend" class="legend"></div>
-        <div style="position:relative;height:200px;"><canvas id="catChart"></canvas></div>
-      </div>
-      <div class="card">
-        <div class="card-title">庫存狀況 Stock Status</div>
-        <div id="stockLegend" class="legend"></div>
-        <div style="position:relative;height:200px;"><canvas id="stockChart"></canvas></div>
-      </div>
-    </div>
-
-    <!-- MoM Section (hidden until 2+ months of data) -->
-    <div id="momSection" style="display:none;">
-      <div class="metrics" style="margin-bottom:1.25rem;">
-        <div class="metric">
-          <div class="metric-label">GMV 月增率 MoM</div>
-          <div class="metric-value" id="mom-gmv-growth" style="font-size:22px;">—</div>
-        </div>
-        <div class="metric">
-          <div class="metric-label">曝光月增率 MoM</div>
-          <div class="metric-value" id="mom-imp-growth" style="font-size:22px;">—</div>
-        </div>
-        <div class="metric">
-          <div class="metric-label">訂單月增率 MoM</div>
-          <div class="metric-value" id="mom-ord-growth" style="font-size:22px;">—</div>
-        </div>
-      </div>
-      <div class="card">
-        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:1rem;">
-          <div class="card-title" style="margin-bottom:0;">月份比較 Month-over-Month</div>
-          <div style="display:flex;gap:12px;font-size:11px;color:var(--text3);">
-            <span style="display:flex;align-items:center;gap:4px;"><span style="width:8px;height:8px;border-radius:2px;background:#2d7a4f;display:inline-block;"></span>GMV ($)</span>
-            <span style="display:flex;align-items:center;gap:4px;"><span style="width:8px;height:8px;border-radius:2px;background:#185FA5;display:inline-block;"></span>Impressions</span>
-          </div>
-        </div>
-        <div style="position:relative;height:240px;"><canvas id="momChart"></canvas></div>
-      </div>
-    </div>
-  </div>
-
-  <!-- ② PRODUCTS -->
-  <div id="page-products" class="page">
-    <div class="page-header">
-      <div class="page-title">商品管理 Product Management</div>
-      <div class="page-sub" id="productsSub">請先至「上傳數據」頁面上傳 xlsx 檔案</div>
-    </div>
-    <div class="cat-tabs" id="catTabs"></div>
-    <div class="toolbar">
-      <input type="text" id="searchBox" placeholder="搜尋商品名稱 / Seller SKU...">
-      <select id="sortBox">
-        <option value="name">名稱排序</option>
-        <option value="price_asc">價格低→高</option>
-        <option value="price_desc">價格高→低</option>
-        <option value="qty_asc">庫存低→高</option>
-      </select>
-    </div>
-    <div class="product-grid" id="productGrid">
-      <div class="empty">尚未載入商品資料</div>
-    </div>
-  </div>
-
-  <!-- ③ LINKS -->
-  <div id="page-links" class="page">
-    <div class="page-header">
-      <div class="page-title">刊登連結 Listing Links</div>
-      <div class="page-sub">TikTok Shop 商品頁面連結追蹤</div>
-    </div>
-    <div class="card">
-      <div class="toolbar" style="margin-bottom:0.75rem;">
-        <input type="text" id="linkSearch" placeholder="搜尋商品名稱 / SKU...">
-      </div>
+<!-- VIDEO TABLE -->
+<div class="section">
+  <div class="section-title">官方影片 表現一覧（14 支）</div>
+  <div class="table-card">
+    <div class="table-scroll">
       <table>
         <thead>
           <tr>
-            <th>商品名稱 Product</th>
-            <th>Seller SKU</th>
+            <th>影片</th>
             <th>品類</th>
-            <th>售價</th>
-            <th>庫存</th>
-            <th>圖片連結</th>
+            <th>投稿日</th>
+            <th>播放量</th>
+            <th>按讚</th>
+            <th>留言</th>
+            <th>分享</th>
+            <th>商品點擊</th>
+            <th>GMV</th>
           </tr>
         </thead>
-        <tbody id="linkTable">
-          <tr><td colspan="6" class="empty">尚未載入數據</td></tr>
-        </tbody>
+        <tbody id="videoTableBody"></tbody>
       </table>
     </div>
   </div>
+</div>
 
-  <!-- ④ PROGRESS -->
-  <div id="page-progress" class="page">
-    <div class="page-header">
-      <div class="page-title">專案進度 Project Progress</div>
-      <div class="page-sub">慶豐富 TikTok Shop US 開店計劃</div>
-    </div>
+<!-- KOL SECTION -->
+<div class="section">
+  <div class="section-title">達人投稿 KOL/KOC 表現（33 位）</div>
+  <div class="kol-grid" id="kolGrid"></div>
+</div>
 
-    <div class="metric" style="margin-bottom:1.25rem;">
-      <div class="metric-label" style="font-size:13px;">整體進度 Overall Progress</div>
-      <div class="metric-value" id="progressVal" style="font-size:40px;letter-spacing:-1px;">—%</div>
-      <div class="progress-wrap" style="height:8px;margin-top:10px;"><div class="progress-fill" id="progressBar" style="width:0%"></div></div>
-    </div>
-
-    <div class="card">
-      <div class="card-title" style="margin-bottom:1rem;font-size:15px;">里程碑 Milestones</div>
-      <div class="timeline" id="milestoneList"></div>
-    </div>
-  </div>
-
-  <!-- ⑤ VIDEO PERFORMANCE -->
-  <div id="page-video" class="page">
-    <div class="page-header">
-      <div class="page-title">影片成效 Video Performance</div>
-      <div class="page-sub" id="videoSub">載入中...</div>
-    </div>
-
-    <div class="metrics" style="margin-bottom:1.25rem;">
-      <div class="metric">
-        <div class="metric-label">影片總數 Videos</div>
-        <div class="metric-value" id="v-count">—</div>
-      </div>
-      <div class="metric">
-        <div class="metric-label">總觀看 Total VV</div>
-        <div class="metric-value" id="v-vv">—</div>
-      </div>
-      <div class="metric">
-        <div class="metric-label">總訂單 Orders</div>
-        <div class="metric-value" id="v-orders">—</div>
-      </div>
-      <div class="metric">
-        <div class="metric-label">總 GMV</div>
-        <div class="metric-value" id="v-gmv">—</div>
-      </div>
-    </div>
-
-    <div class="two-col" style="margin-bottom:1.25rem;">
-      <div class="card">
-        <div class="card-title">觀看數排行 Top Videos by VV</div>
-        <div style="position:relative;height:220px;"><canvas id="videoVVChart"></canvas></div>
-      </div>
-      <div class="card">
-        <div class="card-title">互動數據 Engagement</div>
-        <div id="engagementLegend" class="legend"></div>
-        <div style="position:relative;height:220px;"><canvas id="engagementChart"></canvas></div>
-      </div>
-    </div>
-
-    <div class="card">
-      <div class="card-title" style="margin-bottom:1rem;">影片明細 Video List</div>
-      <div style="overflow-x:auto;">
-        <table id="videoTable">
-          <thead>
-            <tr>
-              <th style="min-width:200px;">影片內容</th>
-              <th>日期</th>
-              <th>VV</th>
-              <th>Likes</th>
-              <th>Comments</th>
-              <th>Shares</th>
-              <th>Product Imp.</th>
-              <th>Orders</th>
-              <th>GMV ($)</th>
-              <th>完播率</th>
-            </tr>
-          </thead>
-          <tbody id="videoTableBody">
-            <tr><td colspan="10" class="empty">載入中...</td></tr>
-          </tbody>
-        </table>
-      </div>
+<!-- KOL TABLE TOP10 -->
+<div class="section">
+  <div class="section-title">達人 Top 10 詳細數據</div>
+  <div class="table-card">
+    <div class="table-scroll">
+      <table>
+        <thead>
+          <tr>
+            <th>排名</th>
+            <th>達人</th>
+            <th>投稿日</th>
+            <th>訂單數</th>
+            <th>按讚</th>
+            <th>GMV（affiliate）</th>
+          </tr>
+        </thead>
+        <tbody id="kolTableBody"></tbody>
+      </table>
     </div>
   </div>
+</div>
 
-  <!-- ⑥ SOP -->
-  <div id="page-sop" class="page">
-    <div class="page-header">
-      <div class="page-title">更新說明 SOP</div>
-      <div class="page-sub">數據更新步驟指引</div>
+<!-- AI ANALYSIS -->
+<div class="section">
+  <div class="section-title">AI 分析建議</div>
+  <div class="analysis-grid">
+    <div class="analysis-card" style="border-color:rgba(34,212,123,0.3)">
+      <h3 style="color:var(--green)">🔥 本期亮點</h3>
+      <ul>
+        <li data-icon="✅">累計 GMV 本週突破 <strong>¥129,700</strong>，較上週 ¥48,278 成長 +168.7%，首次直播（4/9）帶動商品卡 GMV ¥76,873，效果顯著。</li>
+        <li data-icon="✅">達人陣容擴大至 33 位，8 位達人產生訂單；新達人 @rin_shokai 單週播放 <strong>26,030 次</strong>，為本週最高曝光 KOL。</li>
+        <li data-icon="✅">珍珠系列影片「店裡的味道在家這麼便宜！」本週播放 <strong>3,338 次</strong>，GMV ¥2,600，成為官方帳號本週爆款。</li>
+        <li data-icon="✅">達人投稿曝光累計達 <strong>141,746 次</strong>（WoW +37.2%），KOL GMV ¥36,025（WoW +154.5%），KOL 策略全面加速。</li>
+      </ul>
     </div>
-
-    <div class="card" style="margin-bottom:1.25rem;">
-      <div style="display:flex;align-items:center;gap:10px;margin-bottom:1rem;">
-        <span style="background:var(--green-bg);color:var(--green);font-size:12px;font-weight:500;padding:3px 10px;border-radius:20px;">A</span>
-        <div class="card-title" style="margin-bottom:0;">更新專案進度</div>
-      </div>
-      <div style="font-size:13px;color:var(--text2);line-height:2;">
-        <p style="margin-bottom:6px;"><strong style="color:var(--text);">步驟 1</strong> &nbsp;打開 Google Sheets →
-          <a href="https://docs.google.com/spreadsheets/d/14on4x4jo02d73TBfPC2Wwf4pnRCRJqOylX7cqoAyxME/edit" target="_blank" style="color:var(--blue);">TikTok Shop 專案進度 ↗</a>
-        </p>
-        <p style="margin-bottom:6px;"><strong style="color:var(--text);">步驟 2</strong> &nbsp;直接編輯欄位內容：</p>
-        <div style="background:var(--surface2);border-radius:var(--radius-sm);padding:10px 14px;margin:6px 0 12px;font-size:12px;font-family:'DM Mono',monospace;line-height:1.8;">
-          A 欄（status）：done / active / pending<br>
-          B 欄（title）：里程碑名稱<br>
-          C 欄（date）：日期或說明<br>
-          D 欄（desc）：描述內容
-        </div>
-        <p><strong style="color:var(--text);">步驟 3</strong> &nbsp;回到此網頁，重新整理頁面即可看到更新</p>
-      </div>
+    <div class="analysis-card" style="border-color:rgba(254,44,85,0.3)">
+      <h3 style="color:var(--red)">⚠️ 需關注</h3>
+      <ul>
+        <li data-icon="🔴">33 位達人中仍有 25 位 GMV=0，轉化率有提升空間。建議本週提供限定 Coupon 給播放高但無轉化的達人（如 @ponchanmann 播放 10,170次）。</li>
+        <li data-icon="🟠">官方影片本週新增播放 21,039 次，但部分新影片播放量偏低（92~341 次），需觀察是否受算法流量限制影響。</li>
+        <li data-icon="🟡">後台數據系統延遲仍存在，商品卡 GMV ¥76,873 含直播數據，建議下週確認各渠道拆分準確性。</li>
+      </ul>
     </div>
-
-    <div class="card" style="margin-bottom:1.25rem;">
-      <div style="display:flex;align-items:center;gap:10px;margin-bottom:1rem;">
-        <span style="background:var(--blue-bg);color:var(--blue);font-size:12px;font-weight:500;padding:3px 10px;border-radius:20px;">B</span>
-        <div class="card-title" style="margin-bottom:0;">更新商品資料</div>
-      </div>
-      <div style="font-size:13px;color:var(--text2);line-height:2;">
-        <p style="margin-bottom:6px;"><strong style="color:var(--text);">步驟 1</strong> &nbsp;登入 TikTok Shop Seller Center</p>
-        <div style="background:var(--surface2);border-radius:var(--radius-sm);padding:10px 14px;margin:6px 0 12px;font-size:12px;line-height:1.8;">
-          路徑：<strong style="color:var(--text);">Products → Manage Products → Bulk Actions → Bulk Edit Products</strong><br>
-          → <strong style="color:var(--text);">Select Products → 全選點 Select Checked</strong><br>
-          → <strong style="color:var(--text);">點 All Information → Generate Template</strong><br>
-          → 下載產生的 .xlsx 檔案
-        </div>
-        <p style="margin-bottom:6px;"><strong style="color:var(--text);">步驟 2</strong> &nbsp;打開 Google Sheets →
-          <a href="https://docs.google.com/spreadsheets/d/1tfExScl8fmUD8Jexq2z4fF8hRwCvFnOwiFg9BF_BUNo/edit" target="_blank" style="color:var(--blue);">商品資料表 ↗</a>
-        </p>
-        <div style="background:var(--surface2);border-radius:var(--radius-sm);padding:10px 14px;margin:6px 0 12px;font-size:12px;line-height:1.8;">
-          全選所有資料（Ctrl+A）→ 刪除<br>
-          打開剛下載的 .xlsx → 全選 → 複製<br>
-          貼回 Google Sheets（Ctrl+V）
-        </div>
-        <p><strong style="color:var(--text);">步驟 3</strong> &nbsp;回到此網頁，重新整理即可</p>
-      </div>
-    </div>
-
-    <div class="card">
-      <div style="display:flex;align-items:center;gap:10px;margin-bottom:1rem;">
-        <span style="background:var(--amber-bg);color:var(--amber);font-size:12px;font-weight:500;padding:3px 10px;border-radius:20px;">C</span>
-        <div class="card-title" style="margin-bottom:0;">更新流量 / 銷售數據</div>
-      </div>
-      <div style="font-size:13px;color:var(--text2);line-height:2;">
-        <p style="margin-bottom:6px;"><strong style="color:var(--text);">步驟 1</strong> &nbsp;登入 TikTok Shop Seller Center</p>
-        <div style="background:var(--surface2);border-radius:var(--radius-sm);padding:10px 14px;margin:6px 0 12px;font-size:12px;line-height:1.8;">
-          路徑：<strong style="color:var(--text);">Analytics → Product Analytics → Product Traffic</strong><br>
-          右上角選擇日期範圍（建議選當月 1 號到月底）<br>
-          點選右上角 <strong style="color:var(--text);">「Download」</strong> → 下載 .xlsx 檔案
-        </div>
-        <p style="margin-bottom:6px;"><strong style="color:var(--text);">步驟 2</strong> &nbsp;打開 Google Sheets →
-          <a href="https://docs.google.com/spreadsheets/d/1BlM9tFx_ynKKw09G_u_OWVnlivOoH9x00CuCOxQ7KJg/edit" target="_blank" style="color:var(--blue);">Product Traffic Core Stats ↗</a>
-        </p>
-        <div style="background:var(--surface2);border-radius:var(--radius-sm);padding:10px 14px;margin:6px 0 12px;font-size:12px;line-height:1.8;">
-          <strong style="color:var(--text);">注意：不要刪除舊資料！</strong><br>
-          找到最後一列資料的下一列，從那裡開始貼上新的每日數據<br>
-          （只貼 Daily data 的部分，不要貼 Summary 那幾列）
-        </div>
-        <p><strong style="color:var(--text);">步驟 3</strong> &nbsp;回到此網頁，重新整理即可看到最新圖表</p>
-      </div>
-    </div>
-
-    <div class="card">
-      <div style="display:flex;align-items:center;gap:10px;margin-bottom:1rem;">
-        <span style="background:var(--blue-bg);color:var(--blue);font-size:12px;font-weight:500;padding:3px 10px;border-radius:20px;">D</span>
-        <div class="card-title" style="margin-bottom:0;">更新影片成效數據</div>
-      </div>
-      <div style="font-size:13px;color:var(--text2);line-height:2;">
-        <p style="margin-bottom:6px;"><strong style="color:var(--text);">步驟 1</strong> &nbsp;登入 TikTok Shop Seller Center</p>
-        <div style="background:var(--surface2);border-radius:var(--radius-sm);padding:10px 14px;margin:6px 0 12px;font-size:12px;line-height:1.8;">
-          路徑：<strong style="color:var(--text);">LIVE &amp; Video → Shoppable Videos → Content Management</strong><br>
-          右上角點選 <strong style="color:var(--text);">「Download」</strong> → 下載 .xlsx 檔案
-        </div>
-        <p style="margin-bottom:6px;"><strong style="color:var(--text);">步驟 2</strong> &nbsp;打開 Google Sheets →
-          <a href="https://docs.google.com/spreadsheets/d/1wR6c4bVEzsGXzHJ0MuRJNH7WyAUtd1bqcAXjjPKqhAI/edit" target="_blank" style="color:var(--blue);">Video Performance ↗</a>
-        </p>
-        <div style="background:var(--surface2);border-radius:var(--radius-sm);padding:10px 14px;margin:6px 0 12px;font-size:12px;line-height:1.8;">
-          <strong style="color:var(--text);">注意：不要刪除舊資料！</strong><br>
-          找到最後一列的下一列，把新下載的<strong style="color:var(--text);"> 影片資料列</strong>追加到最後面<br>
-          （不需要貼日期標題列，只貼影片數據列）
-        </div>
-        <p><strong style="color:var(--text);">步驟 3</strong> &nbsp;回到此網頁，重新整理即可</p>
-      </div>
+    <div class="analysis-card" style="border-color:rgba(37,244,238,0.3)">
+      <h3 style="color:var(--cyan)">🎯 下週行動</h3>
+      <ul>
+        <li data-icon="①">【直播加碼】4/16（木）20:00 安排第二次直播，主打珍珠 + 芒果乾組合特價，目標 GMV ¥30,000。</li>
+        <li data-icon="②">【KOL 轉化】針對播放>5,000 但 GMV=0 的達人（@leonmama777 5,790、@nextturn.cs 5,280），提供 10% OFF 限定 Coupon code 驅動轉單。</li>
+        <li data-icon="③">【影片強化】「爆紅珍珠影片」3,338 次播放已帶動轉化，下週出一支同系列跟進影片，趁熱加碼珍珠系列聲量。</li>
+        <li data-icon="④">【達人擴充】目前 33 位投稿，目標下週達 40 位，優先邀請食品/居家類帳號以提升品類精準度。</li>
+      </ul>
     </div>
   </div>
+</div>
 
-</main>
+<!-- SUMMARY -->
+<div class="section">
+  <div class="section-title">本期營運摘要</div>
+  <div class="summary-box">
+    <p>
+      📌 <strong style="color:var(--cyan)">帳號概況</strong>：截至 2026/04/13，Taiwan Pavilion 官方帳號已累計發布 <strong>17 支影片</strong>（本週新增 3 支），33 位達人完成投稿，較上週增加 10 位。<br><br>
+      🎯 <strong style="color:var(--green)">銷售爆發</strong>：累計 GMV 已達 <strong>¥129,700</strong>，較上週 ¥48,278 大幅成長 +168.7%。直播電商於 4/9 首次舉辦，帶動商品卡 GMV 達 ¥76,873，佔總 GMV 59%。<br><br>
+      🚀 <strong style="color:var(--red)">達人策略加速</strong>：33 位達人累計曝光 <strong>141,746 次</strong>，8 位達人產生訂單。新星 @rin_shokai 單週播放 26,030 次表現亮眼，@koinudesuyo 累計 GMV 達 ¥9,789 排名第一。
+    </p>
+  </div>
+</div>
 
-<!-- MOBILE BOTTOM NAV -->
-<nav class="bottom-nav" id="bottomNav" style="grid-template-columns:repeat(5,1fr);">
-  <button class="bottom-nav-btn active" onclick="showPage('dashboard',this);syncBottomNav(this)">
-    <span class="bn-icon">◻</span>總覽
-  </button>
-  <button class="bottom-nav-btn" onclick="showPage('products',this);syncBottomNav(this)">
-    <span class="bn-icon">◈</span>商品
-  </button>
-  <button class="bottom-nav-btn" onclick="showPage('links',this);syncBottomNav(this)">
-    <span class="bn-icon">⊛</span>連結
-  </button>
-  <button class="bottom-nav-btn" onclick="showPage('video',this);syncBottomNav(this)">
-    <span class="bn-icon">▷</span>影片
-  </button>
-  <button class="bottom-nav-btn" onclick="showPage('progress',this);syncBottomNav(this)">
-    <span class="bn-icon">◎</span>進度
-  </button>
-</nav>
+</div><!-- /container -->
 
-<!-- PRODUCT MODAL -->
-<div id="uploadStatus" style="display:none"></div>
-<div class="modal-bg" id="modalBg" onclick="if(event.target===this)closeModal()">
-  <div class="modal" id="modal"></div>
+<div class="footer">
+  <div>TikTok Shop Japan ｜ <strong>Taiwan Pavilion</strong> 週報</div>
+  <div>生成日：2026/04/13 ｜ 數據來源：TikTok Shop 後台（2026/02/25 ～ 2026/04/13）</div>
+  <div style="margin-top:8px;color:rgba(255,255,255,0.2);font-size:11px">※ 後台數據存在時間差，GMV 等數值以系統完整同步後為準</div>
 </div>
 
 <script>
-let allProducts = [];
-let currentCat = 'all';
-let charts = {};
-let isEditMode = false;
+// ===== DATA =====
+const VIDEOS = [
+  // 新增本週影片（4/5~4/13）
+  {title:'🌸賞花季節和珍珠🧋一起出遊',cat:'珍珠',date:'2026/04/06',plays:345,likes:0,comments:0,shares:0,clicks:0,gmv:0},
+  {title:'高級愛文芒果乾🥭隨心創意料理',cat:'芒果乾',date:'2026/04/07',plays:408,likes:0,comments:0,shares:0,clicks:0,gmv:0},
+  {title:'原材料標示只有「芒果」❕完全無添加愛文芒果',cat:'芒果乾',date:'2026/04/08',plays:341,likes:0,comments:0,shares:0,clicks:0,gmv:0},
+  {title:'在家品嚐道地台灣味！狂一鍋火鍋湯底',cat:'火鍋湯底',date:'2026/04/09',plays:576,likes:0,comments:0,shares:0,clicks:0,gmv:0},
+  {title:'台灣產高級愛文芒果乾300g稀少部位💎',cat:'芒果乾',date:'2026/04/10',plays:486,likes:0,comments:0,shares:0,clicks:0,gmv:0},
+  {title:'台灣超人氣火鍋店狂一鍋蒜香蛤蜊雞鍋底',cat:'火鍋湯底',date:'2026/04/11',plays:766,likes:0,comments:0,shares:0,clicks:0,gmv:0},
+  {title:'把芒果乾放入優格🥛竟然變成高級芒果感！',cat:'芒果乾',date:'2026/04/05',plays:302,likes:0,comments:0,shares:0,clicks:0,gmv:0},
+  {title:'道地台灣拌麵🍜和滑嫩半熟蛋絕配❣',cat:'台灣拌麵',date:'2026/04/06',plays:92,likes:0,comments:0,shares:0,clicks:0,gmv:0},
+  {title:'店裡的味道在家這麼便宜！🧋台灣產正宗珍珠',cat:'珍珠',date:'2026/04/07',plays:664,likes:0,comments:0,shares:0,clicks:0,gmv:0},
+  {title:'店裡的味道在家這麼便宜！🧋珍珠（爆紅）',cat:'珍珠',date:'2026/04/05',plays:3338,likes:0,comments:0,shares:0,clicks:0,gmv:2600},
+  {title:'被譽為芒果界愛馬仕！愛文芒果100%無添加',cat:'芒果乾',date:'2026/04/08',plays:590,likes:0,comments:0,shares:0,clicks:0,gmv:0},
+  {title:'道地台灣拌麵🍜絕對會上癮的美味♡',cat:'台灣拌麵',date:'2026/04/09',plays:1182,likes:0,comments:0,shares:0,clicks:0,gmv:0},
+  {title:'在家🏠享用道地正宗台灣拌麵',cat:'台灣拌麵',date:'2026/04/10',plays:1937,likes:0,comments:0,shares:0,clicks:0,gmv:0},
+  {title:'台灣產正宗黑糖抹茶珍珠🧋的做法',cat:'珍珠',date:'2026/04/11',plays:1993,likes:0,comments:0,shares:0,clicks:0,gmv:0},
+  {title:'🧋介紹珍珠奶茶以外的飲品',cat:'珍珠',date:'2026/04/05',plays:2582,likes:0,comments:0,shares:0,clicks:0,gmv:0},
+  {title:'🎵跟著節奏介紹珍珠🎵 美味珍奶簡單完成！',cat:'珍珠',date:'2026/04/06',plays:2467,likes:0,comments:0,shares:0,clicks:0,gmv:2704},
+  {title:'在家也能享受正宗台灣珍珠✨ #居家咖啡廳',cat:'珍珠',date:'2026/04/07',plays:2970,likes:0,comments:0,shares:0,clicks:0,gmv:4930},
+  // 舊影片
+  {title:'在家也能享受正宗台灣珍珠✨ #boba',cat:'珍珠',date:'2026/02/25',plays:2381,likes:46,comments:1,shares:14,clicks:54,gmv:4930},
+  {title:'🎵跟著節奏介紹珍珠🎵（首發）',cat:'珍珠',date:'2026/02/27',plays:2030,likes:21,comments:0,shares:7,clicks:41,gmv:1638},
+  {title:'🧋珍珠奶茶以外的飲品（首發）',cat:'珍珠',date:'2026/03/02',plays:2137,likes:19,comments:1,shares:3,clicks:12,gmv:0},
+  {title:'台灣產正宗黑糖抹茶珍珠🧋（首發）',cat:'珍珠',date:'2026/03/04',plays:1316,likes:17,comments:0,shares:2,clicks:12,gmv:0},
+  {title:'在家🏠享用道地正宗台灣拌麵（首發）',cat:'台灣拌麵',date:'2026/03/07',plays:1614,likes:16,comments:0,shares:6,clicks:4,gmv:0},
+  {title:'道地台灣拌麵🍜絕對會上癮（首發）',cat:'台灣拌麵',date:'2026/03/10',plays:1049,likes:17,comments:1,shares:4,clicks:2,gmv:0},
+  {title:'被譽為芒果界愛馬仕（首發）',cat:'芒果乾',date:'2026/03/12',plays:530,likes:8,comments:2,shares:1,clicks:3,gmv:0},
+  {title:'店裡的味道在家便宜！🧋台灣產正宗珍珠（首發）',cat:'珍珠',date:'2026/03/16',plays:1904,likes:23,comments:0,shares:0,clicks:24,gmv:0},
+  {title:'道地台灣拌麵🍜和滑嫩半熟蛋絕配（首發）',cat:'台灣拌麵',date:'2026/03/18',plays:556,likes:8,comments:0,shares:0,clicks:2,gmv:0},
+  {title:'把芒果乾放入優格（首發）',cat:'芒果乾',date:'2026/03/20',plays:70,likes:5,comments:0,shares:1,clicks:5,gmv:0},
+  {title:'台灣超人氣火鍋狂一鍋蒜香蛤蜊（首發）',cat:'火鍋湯底',date:'2026/03/24',plays:280,likes:6,comments:0,shares:0,clicks:3,gmv:0},
+  {title:'台灣產高級愛文芒果乾稀少部位（首發）',cat:'芒果乾',date:'2026/03/26',plays:729,likes:11,comments:0,shares:3,clicks:7,gmv:0},
+  {title:'在家品嚐道地台灣味！狂一鍋（首發）',cat:'火鍋湯底',date:'2026/03/30',plays:421,likes:10,comments:0,shares:0,clicks:0,gmv:0},
+  {title:'原材料標示只有「芒果」（首發）',cat:'芒果乾',date:'2026/04/01',plays:89,likes:2,comments:0,shares:0,clicks:0,gmv:0},
+];
 
-// ── MILESTONE DATA ──
-const SHEETS_ID = '14on4x4jo02d73TBfPC2Wwf4pnRCRJqOylX7cqoAyxME';
-const SHEETS_URL = `https://docs.google.com/spreadsheets/d/${SHEETS_ID}/gviz/tq?tqx=out:csv&sheet=Sheet1`;
+const KOLS = [
+  {rank:1,creator:'@koinudesuyo',date:'28/03',gmv_aff:9789,imp:0,orders:9,likes:15},
+  {rank:2,creator:'@rin_shokai',date:'new',gmv_aff:7997,imp:0,orders:5,likes:65},
+  {rank:3,creator:'@dietcoach.emiko',date:'01/04',gmv_aff:7254,imp:0,orders:6,likes:31},
+  {rank:4,creator:'@dorachan.desu',date:'30/03',gmv_aff:2600,imp:0,orders:2,likes:20},
+  {rank:5,creator:'@sakachika_kosodate',date:'03/04',gmv_aff:2600,imp:0,orders:2,likes:5},
+  {rank:6,creator:'@anko._.ok',date:'01/04',gmv_aff:2080,imp:0,orders:2,likes:14},
+  {rank:7,creator:'@diet_tsanpsan',date:'29/03',gmv_aff:1950,imp:0,orders:1,likes:13},
+  {rank:8,creator:'@kaaanato',date:'01/04',gmv_aff:1755,imp:0,orders:1,likes:5},
+  {rank:9,creator:'@eringi_room',date:'29/03',gmv_aff:0,imp:0,orders:0,likes:8},
+  {rank:10,creator:'@leonmama777',date:'29/03',gmv_aff:0,imp:0,orders:0,likes:20},
+  {rank:11,creator:'@mickeyshopzukan',date:'30/03',gmv_aff:0,imp:0,orders:0,likes:18},
+  {rank:12,creator:'@ponchanmann',date:'31/03',gmv_aff:0,imp:0,orders:0,likes:14},
+  {rank:13,creator:'@tomo_o9898',date:'31/03',gmv_aff:0,imp:0,orders:0,likes:29},
+  {rank:14,creator:'@3zi2nekomama',date:'new',gmv_aff:0,imp:0,orders:0,likes:60},
+  {rank:15,creator:'@aochan_shoping',date:'new',gmv_aff:0,imp:0,orders:0,likes:17},
+  {rank:16,creator:'@nextturn.cs',date:'31/03',gmv_aff:0,imp:0,orders:0,likes:25},
+  {rank:17,creator:'@nobi._.yuita',date:'31/03',gmv_aff:0,imp:0,orders:0,likes:18},
+  {rank:18,creator:'@roipochi',date:'31/03',gmv_aff:0,imp:0,orders:0,likes:10},
+  {rank:19,creator:'@yuri430000',date:'04/04',gmv_aff:0,imp:0,orders:0,likes:6},
+  {rank:20,creator:'@miko_mama.usj',date:'31/03',gmv_aff:0,imp:0,orders:0,likes:11},
+];
 
-let milestones = [];
+const CAT_COLOR = {
+  '珍珠':'rgba(13,148,136,',
+  '芒果乾':'rgba(245,158,11,',
+  '台灣拌麵':'rgba(232,18,58,',
+  '火鍋湯底':'rgba(124,58,237,'
+};
+const CAT_BADGE = {
+  '珍珠':'pearl','芒果乾':'mango','台灣拌麵':'noodle','火鍋湯底':'hotpot'
+};
 
-async function loadMilestonesFromSheets() {
-  const list = document.getElementById('milestoneList');
-  if (list) list.innerHTML = '<div style="color:var(--text3);font-size:13px;padding:1rem 0;">載入中...</div>';
-  try {
-    const res = await fetch(SHEETS_URL);
-    if (!res.ok) throw new Error('無法讀取 Sheets');
-    const text = await res.text();
-    const rows = parseCSV(text);
-    if (rows.length < 2) throw new Error('Sheets 資料為空');
-    // row[0] is header, skip it
-    milestones = rows.slice(1).filter(r => r[0] || r[1]).map((r, i) => ({
-      id: i + 1,
-      status: (r[0] || 'pending').trim(),
-      title:  (r[1] || '').trim(),
-      date:   (r[2] || '').trim(),
-      desc:   (r[3] || '').trim(),
-    }));
-    renderMilestones();
-    updateProgressFromData();
-  } catch(e) {
-    if (list) list.innerHTML = `<div style="color:var(--red);font-size:13px;padding:1rem 0;">❌ 無法載入 Google Sheets：${e.message}<br><span style="color:var(--text3);">請確認 Sheets 已設為「任何人可檢視」</span></div>`;
-  }
-}
-
-function parseCSV(text) {
-  const rows = [];
-  const lines = text.split('\n');
-  for (const line of lines) {
-    if (!line.trim()) continue;
-    const cols = [];
-    let cur = '', inQ = false;
-    for (let i = 0; i < line.length; i++) {
-      const ch = line[i];
-      if (ch === '"') { inQ = !inQ; }
-      else if (ch === ',' && !inQ) { cols.push(cur); cur = ''; }
-      else { cur += ch; }
-    }
-    cols.push(cur);
-    rows.push(cols.map(c => c.replace(/^"|"$/g, '').trim()));
-  }
-  return rows;
-}
-
-function updateProgressFromData() {
-  if (!milestones.length) return;
-  const done = milestones.filter(m => m.status === 'done').length;
-  const pct = Math.round((done / milestones.length) * 100);
-  document.getElementById('progressVal').textContent = pct + '%';
-  document.getElementById('progressBar').style.width = pct + '%';
-}
-
-const STATUS_ICONS = { done: '✓', active: '→', pending: '○' };
-
-function renderMilestones() {
-  const list = document.getElementById('milestoneList');
-  if (!list) return;
-
-  const statusColor = {
-    done:    { bg: 'var(--green-bg)',  text: 'var(--green)',  label: '已完成' },
-    active:  { bg: 'var(--blue-bg)',   text: 'var(--blue)',   label: '進行中' },
-    pending: { bg: 'var(--surface2)',  text: 'var(--text3)',  label: '待開始' },
-  };
-
-  if (isEditMode) {
-    // Edit mode: keep as vertical list for easy editing
-    list.style.display = 'flex';
-    list.style.flexDirection = 'column';
-    list.style.gap = '10px';
-    list.innerHTML = milestones.map((m) => {
-      const sc = statusColor[m.status] || statusColor.pending;
-      return `<div style="background:var(--surface2);border-radius:var(--radius-sm);padding:12px;border:1px solid var(--border);">
-        <div style="display:flex;gap:8px;margin-bottom:8px;align-items:center;">
-          <select onchange="updateMilestoneField(${m.id},'status',this.value)"
-            style="font-family:'DM Sans',sans-serif;font-size:12px;padding:3px 6px;border:1px solid var(--border2);border-radius:4px;background:var(--surface);color:var(--text);">
-            <option value="done" ${m.status==='done'?'selected':''}>✓ 已完成</option>
-            <option value="active" ${m.status==='active'?'selected':''}>→ 進行中</option>
-            <option value="pending" ${m.status==='pending'?'selected':''}>○ 待開始</option>
-          </select>
-          <button onclick="deleteMilestone(${m.id})" style="margin-left:auto;font-size:11px;padding:3px 8px;border:none;border-radius:4px;background:var(--red-bg);color:var(--red);cursor:pointer;font-family:'DM Sans',sans-serif;">刪除</button>
-        </div>
-        <input value="${m.title.replace(/"/g,'&quot;')}" oninput="updateMilestoneField(${m.id},'title',this.value)"
-          style="width:100%;font-family:'DM Sans',sans-serif;font-size:13px;font-weight:500;border:1px solid var(--border2);border-radius:4px;padding:5px 8px;margin-bottom:6px;background:var(--surface);color:var(--text);">
-        <input value="${m.date.replace(/"/g,'&quot;')}" oninput="updateMilestoneField(${m.id},'date',this.value)"
-          style="width:100%;font-family:'DM Sans',sans-serif;font-size:12px;border:1px solid var(--border2);border-radius:4px;padding:4px 8px;margin-bottom:6px;background:var(--surface);color:var(--text2);" placeholder="日期">
-        <textarea oninput="updateMilestoneField(${m.id},'desc',this.value)"
-          style="width:100%;font-family:'DM Sans',sans-serif;font-size:12px;border:1px solid var(--border2);border-radius:4px;padding:4px 8px;resize:vertical;min-height:48px;background:var(--surface);color:var(--text2);">${m.desc}</textarea>
-      </div>`;
-    }).join('');
-  } else {
-    // View mode: 2-column card grid
-    list.style.display = 'grid';
-    list.style.gridTemplateColumns = 'repeat(auto-fill, minmax(260px, 1fr))';
-    list.style.gap = '10px';
-    list.style.flexDirection = '';
-    list.innerHTML = milestones.map((m) => {
-      const sc = statusColor[m.status] || statusColor.pending;
-      return `<div style="background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:1rem;display:flex;flex-direction:column;gap:8px;">
-        <div style="display:flex;justify-content:space-between;align-items:flex-start;gap:8px;">
-          <div style="font-size:15px;font-weight:500;color:var(--text);line-height:1.4;">${m.title}</div>
-          <span style="flex-shrink:0;font-size:11px;font-weight:500;padding:3px 10px;border-radius:20px;background:${sc.bg};color:${sc.text};white-space:nowrap;">${sc.label}</span>
-        </div>
-        <div style="font-size:13px;color:var(--text3);">${m.date}</div>
-        <div style="font-size:13px;color:var(--text2);line-height:1.6;">${m.desc}</div>
-      </div>`;
-    }).join('');
-  }
-}
-
-function updateMilestoneField(id, field, val) {
-  const m = milestones.find(x => x.id === id);
-  if (m) { m[field] = val; if (field === 'status') renderMilestones(); }
-}
-
-function deleteMilestone(id) {
-  milestones = milestones.filter(m => m.id !== id);
-  renderMilestones();
-}
-
-function addMilestone() {
-  milestones.push({ id: Date.now(), status: 'pending', title: '新里程碑', date: '預計 YYYY / MM / DD', desc: '描述內容' });
-  renderMilestones();
-}
-
-function updateProgress(val) {
-  const v = Math.min(100, Math.max(0, parseInt(val) || 0));
-  document.getElementById('progressVal').textContent = v + '%';
-  document.getElementById('progressBar').style.width = v + '%';
-}
-
-function doLogin() {
-  const pwd = document.getElementById('pwdInput').value;
-  if (pwd !== '1234') {
-    document.getElementById('pwdInput').style.borderColor = 'var(--red)';
-    document.getElementById('pwdInput').value = '';
-    document.getElementById('pwdInput').placeholder = '密碼錯誤';
-    setTimeout(() => {
-      document.getElementById('pwdInput').style.borderColor = 'var(--border2)';
-      document.getElementById('pwdInput').placeholder = '密碼';
-    }, 1500);
-    return;
-  }
-  isEditMode = true;
-  document.getElementById('pwdBox').style.display = 'none';
-  document.getElementById('exitEditBtn').style.display = 'inline';
-  document.getElementById('editModeLabel').style.display = 'inline';
-  document.getElementById('addMilestoneBtn').style.display = 'inline';
-  renderMilestones();
-}
-
-function exitEditMode() {
-  isEditMode = false;
-  document.getElementById('pwdInput').value = '';
-  document.getElementById('pwdBox').style.display = 'flex';
-  document.getElementById('exitEditBtn').style.display = 'none';
-  document.getElementById('editModeLabel').style.display = 'none';
-  document.getElementById('addMilestoneBtn').style.display = 'none';
-  loadMilestonesFromSheets();
-}
-
-function toggleEditMode() {}
-
-// ── AUTO LOAD PRODUCTS FROM SHEETS ──
-const PRODUCTS_SHEETS_ID = '1tfExScl8fmUD8Jexq2z4fF8hRwCvFnOwiFg9BF_BUNo';
-const PRODUCTS_XLSX_URL = `https://docs.google.com/spreadsheets/d/${PRODUCTS_SHEETS_ID}/export?format=xlsx`;
-
-async function loadProductsFromSheets() {
-  document.getElementById('lastUpdate').textContent = '載入商品中...';
-  try {
-    const res = await fetch(PRODUCTS_XLSX_URL);
-    if (!res.ok) throw new Error('HTTP ' + res.status);
-    const buffer = await res.arrayBuffer();
-    const wb = XLSX.read(buffer, { type: 'array', sheetStubs: true });
-    const ws = wb.Sheets['Template'];
-    if (!ws) throw new Error('找不到 Template 工作表');
-
-    const allKeys = Object.keys(ws).filter(k => k[0] !== '!');
-    let maxR = 0, maxC = 0;
-    allKeys.forEach(addr => {
-      try { const rc = XLSX.utils.decode_cell(addr); if (rc.r > maxR) maxR = rc.r; if (rc.c > maxC) maxC = rc.c; } catch(e) {}
+// ===== CHARTS =====
+const sharedDonutPlugin = {
+  id:'pctLabels',
+  afterDatasetsDraw(chart){
+    const{ctx,data}=chart;
+    const total=data.datasets[0].data.reduce((a,b)=>a+b,0);
+    chart.getDatasetMeta(0).data.forEach((arc,i)=>{
+      const val=data.datasets[0].data[i];
+      if(!val||val/total<0.03) return;
+      const pct=((val/total)*100).toFixed(1)+'%';
+      const angle=(arc.startAngle+arc.endAngle)/2;
+      const r=(arc.outerRadius+arc.innerRadius)/2;
+      const x=arc.x+Math.cos(angle)*r;
+      const y=arc.y+Math.sin(angle)*r;
+      ctx.save();
+      ctx.font='bold 15px "Space Mono", monospace';
+      ctx.textAlign='center';ctx.textBaseline='middle';
+      // White outline for readability
+      ctx.lineWidth=4;ctx.strokeStyle='rgba(255,255,255,0.9)';
+      ctx.strokeText(pct,x,y);
+      ctx.fillStyle='#111';
+      ctx.fillText(pct,x,y);
+      ctx.restore();
     });
-    ws['!ref'] = XLSX.utils.encode_range({ s:{r:0,c:0}, e:{r:maxR,c:maxC} });
-
-    const rows = XLSX.utils.sheet_to_json(ws, { header:1, defval:'', raw:true });
-    const count = parseProducts(rows);
-    const now = new Date().toLocaleString('zh-TW', { month:'numeric', day:'numeric', hour:'2-digit', minute:'2-digit' });
-    document.getElementById('lastUpdate').textContent = `更新於 ${now}`;
-  } catch(e) {
-    document.getElementById('lastUpdate').textContent = '商品載入失敗：' + e.message;
-    console.warn('Products load error:', e.message);
   }
-}
-function syncBottomNav(btn) {
-  document.querySelectorAll('.bottom-nav-btn').forEach(b => b.classList.remove('active'));
-  btn.classList.add('active');
-}
+};
 
-function showPage(id, btn) {
-  document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
-  document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
-  document.getElementById('page-' + id).classList.add('active');
-  if (btn) btn.classList.add('active');
-  if (id === 'products') { document.getElementById('searchBox').oninput = renderProducts; document.getElementById('sortBox').onchange = renderProducts; }
-  if (id === 'links') { document.getElementById('linkSearch').oninput = renderLinks; }
-  if (id === 'video') loadVideoFromSheets();
-  if (id === 'progress') loadMilestonesFromSheets();
-}
-
-// init on load
-document.addEventListener('DOMContentLoaded', () => {
-  loadMilestonesFromSheets();
-  loadProductsFromSheets();
-  loadTrafficFromSheets();
+// Category donut
+const cats = ['珍珠','台灣拌麵','芒果乾','火鍋湯底'];
+const catPlays = cats.map(c => VIDEOS.filter(v=>v.cat===c).reduce((s,v)=>s+v.plays,0));
+const totalPlays = catPlays.reduce((a,b)=>a+b,0);
+const catColors = ['#0D9488','#E8123A','#F59E0B','#7C3AED'];
+new Chart(document.getElementById('categoryChart'), {
+  type:'doughnut',
+  data:{
+    labels: cats,
+    datasets:[{data:catPlays,backgroundColor:catColors,borderColor:'#fff',borderWidth:3}]
+  },
+  options:{
+    responsive:true,cutout:'55%',
+    plugins:{
+      legend:{position:'bottom',labels:{color:'#374151',font:{size:13},padding:16,
+        generateLabels(chart){
+          return chart.data.labels.map((label,i)=>{
+            const val=chart.data.datasets[0].data[i];
+            const pct=((val/totalPlays)*100).toFixed(1);
+            return{text:`${label}  ${pct}%  (${val.toLocaleString()})`,
+              fillStyle:catColors[i],strokeStyle:'transparent',index:i};
+          });
+        }
+      }},
+      tooltip:{callbacks:{label:ctx=>{
+        const val=ctx.parsed;const pct=((val/totalPlays)*100).toFixed(1);
+        return ` ${ctx.label}: ${val.toLocaleString()} 次 (${pct}%)`;
+      }}}
+    }
+  },
+  plugins:[sharedDonutPlugin]
 });
 
-// ── TRAFFIC DATA ──
-const TRAFFIC_SHEETS_ID = '1BlM9tFx_ynKKw09G_u_OWVnlivOoH9x00CuCOxQ7KJg';
-const TRAFFIC_XLSX_URL = `https://docs.google.com/spreadsheets/d/${TRAFFIC_SHEETS_ID}/export?format=xlsx`;
-
-async function loadTrafficFromSheets() {
-  try {
-    const res = await fetch(TRAFFIC_XLSX_URL);
-    if (!res.ok) throw new Error('HTTP ' + res.status);
-    const buffer = await res.arrayBuffer();
-    const wb = XLSX.read(buffer, { type: 'array' });
-
-    // Find all month sheets (format: YYYY-MM)
-    const monthSheets = wb.SheetNames.filter(n => /^\d{4}-\d{2}$/.test(n)).sort();
-
-    // If no YYYY-MM sheets found, fall back to first sheet
-    const sheetsToRead = monthSheets.length > 0 ? monthSheets : [wb.SheetNames[0]];
-
-    // monthData: { 'YYYY-MM': { impressions, pageviews, gmv, orders, dailyRows[] } }
-    const monthData = {};
-
-    for (const sheetName of sheetsToRead) {
-      const ws = wb.Sheets[sheetName];
-      if (!ws) continue;
-      const rows = XLSX.utils.sheet_to_json(ws, { header:1, defval:'' });
-
-      // Determine month key
-      const monthKey = /^\d{4}-\d{2}$/.test(sheetName)
-        ? sheetName
-        : null;
-
-      let totalImpressions = 0, totalPageviews = 0, totalGmv = 0, totalOrders = 0;
-      let dailyStart = -1;
-      let usedSummary = false;
-
-      for (let i = 0; i < rows.length; i++) {
-        const c0 = String(rows[i][0] || '').trim();
-        // Summary row
-        if (!usedSummary && c0.includes('~') && rows[i][1] !== undefined) {
-          const r = rows[i];
-          const imp = Number(r[1]) || 0;
-          const pv  = Number(r[2]) || 0;
-          const gmv = parseFloat(r[6]) || 0;
-          const ord = Number(r[7]) || 0;
-          if (imp || pv || gmv || ord) {
-            totalImpressions = imp; totalPageviews = pv; totalGmv = gmv; totalOrders = ord;
-            usedSummary = true;
-          }
+// GMV donut
+const gmvCats = ['商品卡', '達人投稿', '短影片'];
+const gmvVals = [76873, 36025, 16802];
+const gmvTotal = gmvVals.reduce((a,b)=>a+b,0);
+const gmvColors = ['#2563EB','#F59E0B','#0D9488'];
+new Chart(document.getElementById('gmvChart'), {
+  type:'doughnut',
+  data:{
+    labels: gmvCats,
+    datasets:[{data:gmvVals,backgroundColor:gmvColors,borderColor:'#fff',borderWidth:3}]
+  },
+  options:{
+    responsive:true,cutout:'55%',
+    plugins:{
+      legend:{position:'bottom',labels:{color:'#374151',font:{size:13},padding:16,
+        generateLabels(chart){
+          return chart.data.labels.map((label,i)=>{
+            const val=chart.data.datasets[0].data[i];
+            const pct=((val/gmvTotal)*100).toFixed(1);
+            return{text:`${label}  ${pct}%  (¥${val.toLocaleString()})`,
+              fillStyle:gmvColors[i],strokeStyle:'transparent',index:i};
+          });
         }
-        if (c0 === 'Date') dailyStart = i + 1;
-      }
-
-      const dailyRows = [];
-      if (dailyStart > 0) {
-        for (let i = dailyStart; i < rows.length; i++) {
-          const r = rows[i];
-          const date = String(r[0] || '').trim();
-          if (!date.match(/^\d{4}-\d{2}-\d{2}$/)) continue;
-          const imp = r[1] === '-' || r[1] === '' ? 0 : (Number(r[1]) || 0);
-          const gmv = r[6] === '-' || r[6] === '' ? 0 : (parseFloat(r[6]) || 0);
-          const ord = r[7] === '-' || r[7] === '' ? 0 : (Number(r[7]) || 0);
-          dailyRows.push({ date, imp, gmv, ord });
-          if (!usedSummary) {
-            totalImpressions += imp; totalGmv += gmv; totalOrders += ord;
-          }
-        }
-      }
-
-      const key = monthKey || (dailyRows.length > 0 ? dailyRows[0].date.slice(0,7) : sheetName);
-      monthData[key] = { impressions: totalImpressions, pageviews: totalPageviews, gmv: totalGmv, orders: totalOrders, dailyRows };
+      }},
+      tooltip:{callbacks:{label:ctx=>{
+        const val=ctx.parsed;const pct=((val/gmvTotal)*100).toFixed(1);
+        return ` ${ctx.label}: ¥${val.toLocaleString()} (${pct}%)`;
+      }}}
     }
+  },
+  plugins:[sharedDonutPlugin]
+});
 
-    const months = Object.keys(monthData).sort();
-    const latestMonth = months[months.length - 1];
-    const latest = monthData[latestMonth];
-
-    // Update KPI cards from latest month
-    document.getElementById('m-impressions').textContent = latest.impressions || '—';
-    document.getElementById('m-pageviews').textContent = latest.pageviews || '—';
-    document.getElementById('m-gmv').textContent = latest.gmv ? '$' + latest.gmv.toFixed(2) : '—';
-    document.getElementById('m-orders').textContent = latest.orders || '—';
-    document.getElementById('dashSub').textContent = months.length > 1
-      ? `共 ${months.length} 個月數據 · 最新：${latestMonth}`
-      : `數據月份：${latestMonth}`;
-
-    // Daily impressions chart for latest month
-    const dailyLabels = latest.dailyRows.map(r => r.date.slice(5));
-    const dailyImps = latest.dailyRows.map(r => r.imp);
-
-    destroyChart('impressionsChart');
-    if (dailyLabels.length > 0) {
-      charts.impressionsChart = new Chart(document.getElementById('impressionsChart'), {
-        type: 'bar',
-        data: {
-          labels: dailyLabels,
-          datasets: [{ label: 'Impressions', data: dailyImps, backgroundColor: '#2d7a4f', borderRadius: 4 }]
-        },
-        options: {
-          responsive: true, maintainAspectRatio: false,
-          plugins: { legend: { display: false } },
-          scales: {
-            x: { grid: { color: 'rgba(0,0,0,0.04)' }, ticks: { color: '#a09e99', font: { size: 11 }, maxRotation: 45, autoSkip: true } },
-            y: { grid: { color: 'rgba(0,0,0,0.04)' }, ticks: { color: '#a09e99', font: { size: 11 } }, beginAtZero: true }
-          }
-        }
-      });
-    }
-
-    // MoM comparison chart (only if multiple months)
-    if (months.length > 1) {
-      renderMoMCharts(monthData, months);
-    }
-
-  } catch(e) {
-    document.getElementById('dashSub').textContent = '流量數據載入失敗：' + e.message;
-    console.warn('Traffic load error:', e);
-  }
-}
-
-function renderMoMCharts(monthData, months) {
-  const momSection = document.getElementById('momSection');
-  if (!momSection) return;
-  momSection.style.display = 'block';
-
-  const gmvData = months.map(m => monthData[m].gmv);
-  const impData = months.map(m => monthData[m].impressions);
-  const ordData = months.map(m => monthData[m].orders);
-
-  // MoM growth rate
-  const latest = monthData[months[months.length-1]];
-  const prev   = monthData[months[months.length-2]];
-  const gmvGrowth = prev.gmv > 0 ? ((latest.gmv - prev.gmv) / prev.gmv * 100).toFixed(1) : null;
-  const impGrowth = prev.impressions > 0 ? ((latest.impressions - prev.impressions) / prev.impressions * 100).toFixed(1) : null;
-  const ordGrowth = prev.orders > 0 ? ((latest.orders - prev.orders) / prev.orders * 100).toFixed(1) : null;
-
-  document.getElementById('mom-gmv-growth').textContent   = gmvGrowth !== null ? (gmvGrowth > 0 ? '+' : '') + gmvGrowth + '%' : '—';
-  document.getElementById('mom-imp-growth').textContent   = impGrowth !== null ? (impGrowth > 0 ? '+' : '') + impGrowth + '%' : '—';
-  document.getElementById('mom-ord-growth').textContent   = ordGrowth !== null ? (ordGrowth > 0 ? '+' : '') + ordGrowth + '%' : '—';
-  document.getElementById('mom-gmv-growth').style.color   = gmvGrowth > 0 ? 'var(--green)' : 'var(--red)';
-  document.getElementById('mom-imp-growth').style.color   = impGrowth > 0 ? 'var(--green)' : 'var(--red)';
-  document.getElementById('mom-ord-growth').style.color   = ordGrowth > 0 ? 'var(--green)' : 'var(--red)';
-
-  destroyChart('momChart');
-  charts.momChart = new Chart(document.getElementById('momChart'), {
-    type: 'bar',
-    data: {
-      labels: months,
-      datasets: [
-        { label: 'GMV ($)', data: gmvData, backgroundColor: '#2d7a4f', borderRadius: 4, yAxisID: 'y' },
-        { label: 'Impressions', data: impData, backgroundColor: '#185FA5', borderRadius: 4, yAxisID: 'y2' },
-      ]
-    },
-    options: {
-      responsive: true, maintainAspectRatio: false,
-      plugins: {
-        legend: { display: false }
-      },
-      scales: {
-        x: { grid: { color: 'rgba(0,0,0,0.04)' }, ticks: { color: '#a09e99', font: { size: 12 } } },
-        y:  { position: 'left',  grid: { color: 'rgba(0,0,0,0.04)' }, ticks: { color: '#2d7a4f', font: { size: 11 }, callback: v => '$' + v }, beginAtZero: true },
-        y2: { position: 'right', grid: { display: false }, ticks: { color: '#185FA5', font: { size: 11 } }, beginAtZero: true }
-      }
-    }
-  });
-}
-
-// ── VIDEO PERFORMANCE DATA ──
-const VIDEO_SHEETS_ID = '1wR6c4bVEzsGXzHJ0MuRJNH7WyAUtd1bqcAXjjPKqhAI';
-const VIDEO_XLSX_URL = `https://docs.google.com/spreadsheets/d/${VIDEO_SHEETS_ID}/export?format=xlsx`;
-
-async function loadVideoFromSheets() {
-  try {
-    const res = await fetch(VIDEO_XLSX_URL);
-    if (!res.ok) throw new Error('HTTP ' + res.status);
-    const buffer = await res.arrayBuffer();
-    const wb = XLSX.read(buffer, { type: 'array' });
-    const ws = wb.Sheets[wb.SheetNames[0]];
-    const rows = XLSX.utils.sheet_to_json(ws, { header:1, defval:'' });
-
-    // Find header row (contains 'Creator name')
-    let headerIdx = -1;
-    for (let i = 0; i < rows.length; i++) {
-      if (String(rows[i][0]).trim() === 'Creator name') { headerIdx = i; break; }
-    }
-    if (headerIdx === -1) throw new Error('找不到標題列');
-
-    const headers = rows[headerIdx].map(h => String(h).trim());
-    const col = name => headers.indexOf(name);
-
-    const iVV   = col('VV');
-    const iLike = col('Likes');
-    const iCmt  = col('Comments');
-    const iShr  = col('Shares');
-    const iPImp = col('Product Impressions');
-    const iOrd  = col('Orders');
-    const iGMV  = col('Gross merchandise value (Video) ($)');
-    const iVFR  = col('Video Finish Rate');
-    const iCTR  = col('Click-through rate (Video)');
-    const iInfo = col('Video Info');
-    const iTime = col('Time');
-
-    const videos = [];
-    for (let i = headerIdx + 1; i < rows.length; i++) {
-      const r = rows[i];
-      if (!r[iInfo] && !r[iVV]) continue;
-      videos.push({
-        info:   String(r[iInfo] || '').trim(),
-        time:   String(r[iTime] || '').trim(),
-        vv:     Number(r[iVV])   || 0,
-        likes:  Number(r[iLike]) || 0,
-        cmt:    Number(r[iCmt])  || 0,
-        shares: Number(r[iShr])  || 0,
-        pimp:   Number(r[iPImp]) || 0,
-        orders: Number(r[iOrd])  || 0,
-        gmv:    parseFloat(r[iGMV]) || 0,
-        vfr:    String(r[iVFR] || '0%'),
-        ctr:    String(r[iCTR] || '0%'),
-      });
-    }
-
-    if (!videos.length) throw new Error('沒有影片資料');
-
-    // KPI totals
-    const totalVV  = videos.reduce((a,v) => a+v.vv, 0);
-    const totalOrd = videos.reduce((a,v) => a+v.orders, 0);
-    const totalGMV = videos.reduce((a,v) => a+v.gmv, 0);
-
-    document.getElementById('v-count').textContent  = videos.length;
-    document.getElementById('v-vv').textContent     = totalVV.toLocaleString();
-    document.getElementById('v-orders').textContent = totalOrd;
-    document.getElementById('v-gmv').textContent    = '$' + totalGMV.toFixed(2);
-    document.getElementById('videoSub').textContent = `共 ${videos.length} 支影片`;
-
-    // Top 5 by VV chart
-    const top5 = [...videos].sort((a,b) => b.vv - a.vv).slice(0, 5);
-    const shortLabel = v => v.info.slice(0, 30) + (v.info.length > 30 ? '…' : '');
-
-    destroyChart('videoVVChart');
-    charts.videoVVChart = new Chart(document.getElementById('videoVVChart'), {
-      type: 'bar',
-      data: {
-        labels: top5.map(v => shortLabel(v)),
-        datasets: [{ label: 'VV', data: top5.map(v => v.vv), backgroundColor: '#2d7a4f', borderRadius: 4 }]
-      },
-      options: {
-        indexAxis: 'y',
-        responsive: true, maintainAspectRatio: false,
-        plugins: { legend: { display: false } },
-        scales: {
-          x: { grid: { color: 'rgba(0,0,0,0.04)' }, ticks: { color: '#a09e99', font: { size: 11 } }, beginAtZero: true },
-          y: { grid: { display: false }, ticks: { color: '#6b6860', font: { size: 11 } } }
-        }
-      }
-    });
-
-    // Engagement chart
-    const totalLikes  = videos.reduce((a,v) => a+v.likes, 0);
-    const totalCmt    = videos.reduce((a,v) => a+v.cmt, 0);
-    const totalShares = videos.reduce((a,v) => a+v.shares, 0);
-    document.getElementById('engagementLegend').innerHTML = `
-      <span class="legend-item"><span class="legend-dot" style="background:#2d7a4f;"></span>Likes: ${totalLikes}</span>
-      <span class="legend-item"><span class="legend-dot" style="background:#185FA5;"></span>Comments: ${totalCmt}</span>
-      <span class="legend-item"><span class="legend-dot" style="background:#BA7517;"></span>Shares: ${totalShares}</span>`;
-
-    destroyChart('engagementChart');
-    charts.engagementChart = new Chart(document.getElementById('engagementChart'), {
-      type: 'doughnut',
-      data: {
-        labels: ['Likes', 'Comments', 'Shares'],
-        datasets: [{ data: [totalLikes, totalCmt, totalShares], backgroundColor: ['#2d7a4f','#185FA5','#BA7517'], borderWidth: 0 }]
-      },
-      options: { responsive: true, maintainAspectRatio: false, cutout: '65%', plugins: { legend: { display: false } } }
-    });
-
-    // Table
-    const tbody = document.getElementById('videoTableBody');
-    tbody.innerHTML = videos.map(v => `<tr>
-      <td style="font-size:12px;max-width:220px;line-height:1.4;">${v.info.slice(0,80)}${v.info.length>80?'…':''}</td>
-      <td style="font-size:11px;color:var(--text3);white-space:nowrap;">${v.time.slice(0,10)}</td>
-      <td>${v.vv.toLocaleString()}</td>
-      <td>${v.likes}</td>
-      <td>${v.cmt}</td>
-      <td>${v.shares}</td>
-      <td>${v.pimp}</td>
-      <td style="color:${v.orders>0?'var(--green)':'inherit'};font-weight:${v.orders>0?'500':'400'}">${v.orders}</td>
-      <td style="color:${v.gmv>0?'var(--green)':'inherit'};font-weight:${v.gmv>0?'500':'400'}">${v.gmv>0?'$'+v.gmv.toFixed(2):'—'}</td>
-      <td>${v.vfr}</td>
-    </tr>`).join('');
-
-  } catch(e) {
-    document.getElementById('videoSub').textContent = '影片數據載入失敗：' + e.message;
-    console.warn('Video load error:', e);
-  }
-}
-function handleDrop(e) {
-  e.preventDefault();
-  document.getElementById('uploadZone').classList.remove('drag');
-  handleFile(e.dataTransfer.files[0]);
-}
-
-function handleFile(file) {
-  if (!file) return;
-  const status = document.getElementById('uploadStatus');
-  status.textContent = '讀取中…';
-  const reader = new FileReader();
-  reader.onload = e => {
-    try {
-      const wb = XLSX.read(e.target.result, { type: 'array', sheetStubs: true });
-      const ws = wb.Sheets['Template'];
-      if (!ws) { status.textContent = '❌ 找不到 Template 工作表'; return; }
-
-      // Fix hidden-row range issue
-      const allKeys = Object.keys(ws).filter(k => k[0] !== '!');
-      let maxR = 0, maxC = 0;
-      allKeys.forEach(addr => {
-        try { const rc = XLSX.utils.decode_cell(addr); if (rc.r > maxR) maxR = rc.r; if (rc.c > maxC) maxC = rc.c; } catch(e) {}
-      });
-      ws['!ref'] = XLSX.utils.encode_range({ s:{r:0,c:0}, e:{r:maxR,c:maxC} });
-
-      const rows = XLSX.utils.sheet_to_json(ws, { header:1, defval:'', raw:true });
-      const count = parseProducts(rows);
-
-      const now = new Date().toLocaleString('zh-TW', { month:'numeric', day:'numeric', hour:'2-digit', minute:'2-digit' });
-      status.textContent = `✓ 成功載入 ${count} 件商品 — ${now}`;
-      document.getElementById('lastUpdate').textContent = `更新於 ${now}`;
-      document.getElementById('uploadZone').style.borderColor = '#2d7a4f';
-    } catch(err) {
-      document.getElementById('uploadStatus').textContent = '❌ 錯誤：' + err.message;
-    }
-  };
-  reader.readAsArrayBuffer(file);
-}
-
-function parseProducts(rows) {
-  const map = {};
-  const str = v => String(v === null || v === undefined ? '' : v).trim();
-  for (let i = 0; i < rows.length; i++) {
-    const pid = str(rows[i][0]);
-    if (!/^\d{10,}$/.test(pid)) continue;
-    const name = str(rows[i][2]);
-    const cat = str(rows[i][1]);
-    const price = parseFloat(rows[i][9]) || 0;
-    const listPrice = parseFloat(rows[i][10]) || 0;
-    const qty = parseInt(rows[i][11]) || 0;
-    const sellerSku = str(rows[i][12]);
-    const variation = str(rows[i][6]);
-    const skuId = str(rows[i][5]);
-    const imgs = [18,19,20,21,22,23,24,25,26].map(c => str(rows[i][c])).filter(u => u.startsWith('http'));
-    if (!map[pid]) map[pid] = { pid, name, cat, price, listPrice, imgs:[], skus:[] };
-    imgs.forEach(u => { if (!map[pid].imgs.includes(u)) map[pid].imgs.push(u); });
-    map[pid].skus.push({ skuId, variation, price, qty, sellerSku });
-    if (imgs[0] && !map[pid].imgs[0]) map[pid].imgs.unshift(imgs[0]);
-  }
-  allProducts = Object.values(map);
-  updateDashboard();
-  buildCatTabs();
-  renderProducts();
-  renderLinks();
-  updateMetrics();
-  return allProducts.length;
-}
-
-// ── METRICS ──
-function totalQty(p) { return p.skus.reduce((a,s) => a+s.qty, 0); }
-
-function updateMetrics() {
-  const total = allProducts.length;
-  const totalSkus = allProducts.reduce((a,p) => a+p.skus.length, 0);
-  const oos = allProducts.filter(p => p.skus.every(s => s.qty===0)).length;
-  const cats = new Set(allProducts.map(p => p.cat)).size;
-  document.getElementById('m-products').textContent = total;
-  document.getElementById('m-skus').textContent = totalSkus;
-  document.getElementById('m-oos').textContent = oos;
-  document.getElementById('m-oos').style.color = oos > 0 ? 'var(--red)' : 'var(--text)';
-  document.getElementById('m-cats').textContent = cats;
-  document.getElementById('dashSub').textContent = `${total} 件商品 · ${totalSkus} 個 SKU · 最後更新：${new Date().toLocaleDateString('zh-TW')}`;
-  document.getElementById('productsSub').textContent = `共 ${total} 件商品，${totalSkus} 個 SKU`;
-}
-
-// ── DASHBOARD CHARTS ──
-const COLORS = ['#2d7a4f','#1a5fa8','#9a6200','#7b3fa0','#c05621','#1a7a6e'];
-
-function updateDashboard() {
-  const catCounts = {};
-  allProducts.forEach(p => { catCounts[p.cat] = (catCounts[p.cat]||0)+1; });
-  const catLabels = Object.keys(catCounts);
-  const catData = catLabels.map(c => catCounts[c]);
-
-  destroyChart('catChart');
-  const catLegend = document.getElementById('catLegend');
-  catLegend.innerHTML = catLabels.map((l,i) =>
-    `<span class="legend-item"><span class="legend-dot" style="background:${COLORS[i%COLORS.length]}"></span>${l.replace(/ \(\d+\)/,'')}: ${catCounts[l]}</span>`
-  ).join('');
-  charts.catChart = new Chart(document.getElementById('catChart'), {
-    type: 'doughnut',
-    data: { labels: catLabels, datasets: [{ data: catData, backgroundColor: COLORS, borderWidth: 0 }] },
-    options: { responsive:true, maintainAspectRatio:false, cutout:'65%', plugins:{ legend:{ display:false } } }
-  });
-
-  const oos = allProducts.filter(p => p.skus.every(s=>s.qty===0)).length;
-  const low = allProducts.filter(p => { const q=totalQty(p); return q>0 && q<=5; }).length;
-  const ok = allProducts.length - oos - low;
-  destroyChart('stockChart');
-  document.getElementById('stockLegend').innerHTML = `
-    <span class="legend-item"><span class="legend-dot" style="background:#2d7a4f"></span>正常庫存: ${ok}</span>
-    <span class="legend-item"><span class="legend-dot" style="background:#9a6200"></span>低庫存 (≤5): ${low}</span>
-    <span class="legend-item"><span class="legend-dot" style="background:#b83232"></span>缺貨: ${oos}</span>`;
-  charts.stockChart = new Chart(document.getElementById('stockChart'), {
-    type: 'doughnut',
-    data: { labels:['正常','低庫存','缺貨'], datasets:[{ data:[ok,low,oos], backgroundColor:['#2d7a4f','#9a6200','#b83232'], borderWidth:0 }] },
-    options: { responsive:true, maintainAspectRatio:false, cutout:'65%', plugins:{ legend:{ display:false } } }
-  });
-
-  const catPrices = {};
-  allProducts.forEach(p => {
-    const cat = p.cat.replace(/ \(\d+\)/,'');
-    if (!catPrices[cat]) catPrices[cat] = [];
-    catPrices[cat].push(p.price);
-  });
-  const pcLabels = Object.keys(catPrices);
-  const pcAvg = pcLabels.map(c => +(catPrices[c].reduce((a,b)=>a+b,0)/catPrices[c].length).toFixed(2));
-  destroyChart('priceChart');
-  charts.priceChart = new Chart(document.getElementById('priceChart'), {
-    type: 'bar',
-    data: { labels: pcLabels, datasets:[{ label:'平均售價 Avg Price (USD)', data:pcAvg, backgroundColor: COLORS, borderRadius:4 }] },
-    options: {
-      responsive:true, maintainAspectRatio:false,
-      plugins:{ legend:{ display:false } },
-      scales:{
-        x:{ grid:{ color:'rgba(0,0,0,0.04)' }, ticks:{ color:'#a09e99', font:{size:11} } },
-        y:{ grid:{ color:'rgba(0,0,0,0.04)' }, ticks:{ color:'#a09e99', font:{size:11}, callback: v=>'$'+v } }
-      }
-    }
-  });
-}
-
-function destroyChart(id) {
-  if (charts[id]) { charts[id].destroy(); delete charts[id]; }
-}
-
-// ── PRODUCT GRID ──
-function buildCatTabs() {
-  const cats = ['all', ...new Set(allProducts.map(p => p.cat))];
-  document.getElementById('catTabs').innerHTML = cats.map(c =>
-    `<button class="cat-tab ${c==='all'?'active':''}" onclick="setCat(${JSON.stringify(c)},this)">${c==='all'?'全部 All':c.replace(/ \(\d+\)/,'')}</button>`
-  ).join('');
-}
-
-function setCat(c, el) {
-  currentCat = c;
-  document.querySelectorAll('.cat-tab').forEach(t => t.classList.remove('active'));
-  el.classList.add('active');
-  renderProducts();
-}
-
-function renderProducts() {
-  const q = (document.getElementById('searchBox').value||'').toLowerCase();
-  const sort = document.getElementById('sortBox').value;
-  let list = allProducts.filter(p => {
-    const catOk = currentCat==='all' || p.cat===currentCat;
-    const searchOk = !q || p.name.toLowerCase().includes(q) || p.skus.some(s=>s.sellerSku.toLowerCase().includes(q));
-    return catOk && searchOk;
-  });
-  if (sort==='price_asc') list.sort((a,b)=>a.price-b.price);
-  else if (sort==='price_desc') list.sort((a,b)=>b.price-a.price);
-  else if (sort==='qty_asc') list.sort((a,b)=>totalQty(a)-totalQty(b));
-  else list.sort((a,b)=>a.name.localeCompare(b.name));
-
-  const grid = document.getElementById('productGrid');
-  if (!list.length) { grid.innerHTML = '<div class="empty">沒有符合的商品</div>'; return; }
-  grid.innerHTML = list.map((p,i) => {
-    const qty = totalQty(p);
-    const qb = qty===0 ? '<span class="badge badge-out">缺貨</span>' : qty<=5 ? `<span class="badge badge-low">庫存 ${qty}</span>` : `<span class="badge badge-ok">庫存 ${qty}</span>`;
-    const lh = p.listPrice>p.price ? `<span class="p-price-orig">$${p.listPrice.toFixed(2)}</span>` : '';
-    const imgSection = p.imgs.length > 0
-      ? `<div class="card-img-ph">
-           <a class="img-link" href="${p.imgs[0]}" target="_blank" onclick="event.stopPropagation()">↗ 查看主圖</a>
-           <span class="img-count">共 ${p.imgs.length} 張圖片</span>
-         </div>`
-      : `<div class="card-img-ph"><span class="img-count">無圖片</span></div>`;
-    const realIdx = allProducts.indexOf(p);
-    return `<div class="product-card" onclick="openModal(${realIdx})">
-      ${imgSection}
-      <div class="p-body">
-        <div class="p-cat">${p.cat.replace(/ \(\d+\)/,'')}</div>
-        <div class="p-name">${p.name}</div>
-        <div class="p-meta">
-          <div><span class="p-price">$${p.price.toFixed(2)}</span>${lh}</div>
-          <div style="font-size:11px;color:var(--text3)">${p.skus.length} SKUs</div>
-        </div>
+// ===== VIDEO TABLE =====
+const maxPlays = Math.max(...VIDEOS.map(v=>v.plays));
+const tbody = document.getElementById('videoTableBody');
+VIDEOS.forEach(v=>{
+  const pct = (v.plays/maxPlays*100).toFixed(0);
+  const catColor = CAT_COLOR[v.cat]||'rgba(255,255,255,';
+  tbody.innerHTML += `<tr>
+    <td style="max-width:260px">
+      <div style="font-size:13px;color:#111827;line-height:1.5;margin-bottom:6px">${v.title}</div>
+      <div class="plays-bar">
+        <div class="bar-wrap" style="width:120px"><div class="bar-fill" style="width:${pct}%;--fill:${catColor}0.8)"></div></div>
+        <span class="plays-num">${v.plays.toLocaleString()}</span>
       </div>
-      <div class="p-footer">${qb}${p.skus.length>1?`<span class="badge badge-blue">${p.skus.length} 變體</span>`:''}</div>
-    </div>`;
-  }).join('');
-}
+    </td>
+    <td><span class="badge ${CAT_BADGE[v.cat]||''}">${v.cat}</span></td>
+    <td style="color:#6B7280;font-size:13px;white-space:nowrap">${v.date.slice(5)}</td>
+    <td class="mono" style="font-size:14px;font-weight:600">${v.plays.toLocaleString()}</td>
+    <td class="mono" style="color:#E8123A;font-weight:600">${v.likes}</td>
+    <td class="mono" style="color:#6B7280">${v.comments}</td>
+    <td class="mono" style="color:#6B7280">${v.shares}</td>
+    <td class="mono" style="color:${v.clicks>20?'#0A8A4A':'#374151'};font-weight:${v.clicks>20?700:400}">${v.clicks}</td>
+    <td class="mono" style="color:${v.gmv>0?'#0A8A4A':'#9CA3AF'};font-weight:${v.gmv>0?700:400}">${v.gmv>0?'¥'+v.gmv.toLocaleString():'—'}</td>
+  </tr>`;
+});
 
-// ── LINKS TABLE ──
-function renderLinks() {
-  const q = (document.getElementById('linkSearch').value||'').toLowerCase();
-  let list = allProducts.filter(p => !q || p.name.toLowerCase().includes(q) || p.skus.some(s=>s.sellerSku.toLowerCase().includes(q)));
-  const tbody = document.getElementById('linkTable');
-  if (!list.length) { tbody.innerHTML = '<tr><td colspan="6" class="empty">沒有符合的商品</td></tr>'; return; }
-  const rows = [];
-  list.forEach(p => {
-    p.skus.forEach(s => {
-      const qty = s.qty;
-      const qb = qty===0 ? '<span class="badge badge-out">缺貨</span>' : qty<=5 ? `<span class="badge badge-low">${qty}</span>` : `<span class="badge badge-ok">${qty}</span>`;
-      const imgLinks = p.imgs.slice(0,3).map((u,i) =>
-        `<a class="tbl-link" href="${u}" target="_blank">圖${i+1}↗</a>`
-      ).join(' ');
-      rows.push(`<tr>
-        <td style="max-width:220px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap" title="${p.name}">${p.name}</td>
-        <td style="font-family:'DM Mono',monospace;font-size:12px">${s.sellerSku||'—'}</td>
-        <td>${p.cat.replace(/ \(\d+\)/,'')}</td>
-        <td>$${s.price.toFixed(2)}</td>
-        <td>${qb}</td>
-        <td>${imgLinks || '—'}</td>
-      </tr>`);
-    });
-  });
-  tbody.innerHTML = rows.join('');
-}
-
-// ── MODAL ──
-function openModal(idx) {
-  const p = allProducts[idx];
-  if (!p) return;
-  const qty = totalQty(p);
-  const galleryHtml = p.imgs.length > 0
-    ? `<div class="img-gallery">${p.imgs.map((u,i)=>`<a href="${u}" target="_blank">↗ 圖片 ${i+1}</a>`).join('')}</div>`
-    : `<p style="font-size:12px;color:var(--text3);margin-bottom:1rem">無圖片連結</p>`;
-  document.getElementById('modal').innerHTML = `
-    <div class="modal-head">
-      <div><div class="modal-head-title">${p.name}</div><div class="modal-head-cat">${p.cat}</div></div>
-      <button class="modal-close" onclick="closeModal()">✕</button>
+// ===== KOL CARDS =====
+const kolGrid = document.getElementById('kolGrid');
+const maxGmv = Math.max(...KOLS.map(k=>k.gmv_aff), 1);
+const emojis = ['🥇','🥈','🥉','4️⃣','5️⃣'];
+KOLS.slice(0, 10).forEach((k, i) => {
+  const pct = (k.gmv_aff / maxGmv * 100).toFixed(0);
+  kolGrid.innerHTML += `<div class="kol-card" style="animation-delay:${i*0.04}s">
+    <div class="kol-header">
+      <div class="kol-avatar">${emojis[i]||'👤'}</div>
+      <div>
+        <div class="kol-name">${k.creator}</div>
+        <div class="kol-date">投稿：${k.date}</div>
+      </div>
     </div>
-    <div class="modal-body">
-      ${galleryHtml}
-      <div class="detail-row"><span class="detail-label">Product ID</span><span class="detail-val" style="font-size:11px;font-family:'DM Mono',monospace">${p.pid}</span></div>
-      <div class="detail-row"><span class="detail-label">售價</span><span class="detail-val">$${p.price.toFixed(2)}${p.listPrice>p.price?` <span style="font-size:11px;color:var(--text3);font-weight:400;text-decoration:line-through">$${p.listPrice.toFixed(2)}</span>`:''}</span></div>
-      <div class="detail-row"><span class="detail-label">總庫存</span><span class="detail-val" style="color:${qty===0?'var(--red)':qty<=5?'var(--amber)':'var(--green)'}">${qty}</span></div>
-      <table class="sku-table">
-        <thead><tr><th>Variation</th><th>Seller SKU</th><th>Price</th><th>Qty</th></tr></thead>
-        <tbody>${p.skus.map(s=>`<tr>
-          <td>${s.variation||'—'}</td>
-          <td style="font-family:'DM Mono',monospace;font-size:11px">${s.sellerSku||'—'}</td>
-          <td>$${s.price.toFixed(2)}</td>
-          <td style="color:${s.qty===0?'var(--red)':s.qty<=3?'var(--amber)':'inherit'};font-weight:${s.qty===0?'500':'400'}">${s.qty}</td>
-        </tr>`).join('')}</tbody>
-      </table>
-    </div>`;
-  document.getElementById('modalBg').classList.add('open');
-}
+    <div class="kol-stats">
+      <div class="kol-stat">
+        <div class="kol-stat-val" style="color:${k.gmv_aff>0?'#0A8A4A':'#9CA3AF'}">${k.gmv_aff>0?'¥'+k.gmv_aff.toLocaleString():'¥0'}</div>
+        <div class="kol-stat-label">GMV</div>
+      </div>
+      <div class="kol-stat">
+        <div class="kol-stat-val">${k.orders}</div>
+        <div class="kol-stat-label">訂單數</div>
+      </div>
+      <div class="kol-stat">
+        <div class="kol-stat-val" style="color:#E8123A">${k.likes}</div>
+        <div class="kol-stat-label">按讚</div>
+      </div>
+    </div>
+    <div class="kol-gmv-bar"><div class="kol-gmv-fill" style="width:${pct}%"></div></div>
+  </div>`;
+});
 
-function closeModal() { document.getElementById('modalBg').classList.remove('open'); }
-document.addEventListener('keydown', e => { if (e.key==='Escape') closeModal(); });
+// ===== KOL TABLE =====
+const kolTbody = document.getElementById('kolTableBody');
+KOLS.slice(0, 10).forEach(k => {
+  const rankClass = k.rank<=3 ? `rank-${k.rank}` : 'rank-n';
+  kolTbody.innerHTML += `<tr>
+    <td><span class="rank-num ${rankClass}">${k.rank}</span></td>
+    <td style="color:#008B86;font-weight:600">${k.creator}</td>
+    <td style="color:#6B7280;font-size:13px">${k.date}</td>
+    <td class="mono" style="color:${k.orders>0?'#0A8A4A':'#9CA3AF'};font-weight:${k.orders>0?700:400}">${k.orders}</td>
+    <td class="mono" style="color:#E8123A;font-weight:600">${k.likes}</td>
+    <td class="mono" style="color:${k.gmv_aff>0?'#0A8A4A':'#9CA3AF'};font-weight:${k.gmv_aff>0?700:400}">${k.gmv_aff>0?'¥'+k.gmv_aff.toLocaleString():'—'}</td>
+  </tr>`;
+});
 </script>
 </body>
 </html>
